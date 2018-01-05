@@ -1,0 +1,15 @@
+*.dSYM
+*~
+.*.swp
+.gdb_history
+tmp*
+*.dylib
+*.rlib
+*.bin
+*.so
+*.pb
+src/protos/*.rs
+target/
+Cargo.lock
+.idea
+*.iml
