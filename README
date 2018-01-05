@@ -1,0 +1,5 @@
+TODO:
+-Set up rust and cargo file (just needs to take in arguments for now, and maybe print "Welcome to Maeve".
+-Start a fake game. Should build a game concurrently with the interpreter so we know what's needed.
+-Scope out more of the protos- ie fill in the stubs.
+-Figure out how to compile protos for Rust. These will make generated files you can include in the repo.
