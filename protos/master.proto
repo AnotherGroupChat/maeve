@@ -1,0 +1,40 @@
+syntax = "proto3";
+package Maeve;
+// TODO: break this into seperate proto files. This is just a nice and hacky way
+// define our schema quickly. 
+
+// An instance of a game to be loaded.
+message Game {
+  message LevelId {}
+  message Stats {}
+  message Action {
+    string description = 0; // You swung the hat!
+    string name = 1; // "swing"
+    LevelId resultant_level = 2;
+  }
+  message NPC {
+    string name = 0; // Frank the troll. 
+    Stats stats = 1;
+  }
+  message Level {
+    message Entrances {
+      string description = 0; // To the left there is a ladder.
+      Action action = 1; // Climbed into the well, flew accross the sky.
+    }
+    LevelId id = 0;
+    string intro = 1; // e.g "You entered the room!";
+    repeated NPC npcs = 2; // A troll is in the room.
+    repeated Item items = 3; // Items in the room
+  }
+  message Item { 
+    string name = 0; // e.g. Sword, hat etc..
+    string description = 1;// e.g. Hard, flacid etc..
+    repeated Action actions = 2; // What the Item can do.
+  }
+
+  // State variables.
+  string name = 0;
+  repeated Level levels = 1; // Game levels.
+  repeated Item inventory = 2; // What you got.
+  Stats stats = 3;
+}
