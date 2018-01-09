@@ -14,7 +14,7 @@ fn main() {
         io::stdin().read_line(&mut choice)
             .expect("Failed to read input.");
 
-        let choice: u32 = match choice.trim().parse(){
+        let choice: u8 = match choice.trim().parse(){
             Ok(num) => num,
             Err(_) => continue,
         };
