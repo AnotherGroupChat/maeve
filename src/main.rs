@@ -11,10 +11,11 @@ fn main() {
         println!("3 - Exit Game");
 
         let mut choice = String::new();
-        io::stdin().read_line(&mut choice)
+        io::stdin()
+            .read_line(&mut choice)
             .expect("Failed to read input.");
 
-        let choice: u8 = match choice.trim().parse(){
+        let choice: u32 = match choice.trim().parse(){
             Ok(num) => num,
             Err(_) => continue,
         };
