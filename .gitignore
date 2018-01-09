@@ -8,7 +8,7 @@ tmp*
 *.bin
 *.so
 *.pb
-src/protos/*.rs
+src/protos/master.rs
 target/
 Cargo.lock
 .idea
