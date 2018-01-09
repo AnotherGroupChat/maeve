@@ -1,3 +1,11 @@
+Getting started on debian-based systems:
+
+> cargo install protobuf
+> sudo apt-get install protobuf-compiler
+> ./build.sh
+> cargo build
+
+
 TODO:
 -Set up rust and cargo file (just needs to take in arguments for now, and maybe print "Welcome to Maeve".
 -Start a fake game. Should build a game concurrently with the interpreter so we know what's needed.
