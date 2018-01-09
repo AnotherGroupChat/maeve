@@ -5,3 +5,8 @@ authors = ["dylan <contact@postmodern.technology>"]
 
 [dependencies]
 protobuf = "1.4.3"
+
+[dependencies.clap]
+version = "2.29"
+default-features = false
+features = [ "suggestions", "color", "yaml" ]
