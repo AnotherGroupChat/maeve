@@ -1,4 +1,6 @@
 levels {}
-levels {}
+levels {
+    intro : "This is the first level"
+}
 
-name : "Protagonist"
+name : "Kevin"
