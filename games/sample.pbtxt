@@ -1,24 +1,24 @@
 levels {
     entrance {
-      description : "Where I'm bound to stay\n Where you sleep all day,\nWhere they hung the jerk\nThat invented work\nIn the Big Rock Candy Mountains\n"
+      description : "Where I'm bound to stay Where you sleep all day,Where they hung the jerkThat invented workIn the Big Rock Candy Mountains"
       action {}
     }
 
-    intro : "Welcome to Westworld. \n"
+    intro : "Welcome to Westworld. "
     npcs {
-      name : "Dolores",
+      name : "NPC: Dolores",
       stats {}
     }
 }
-levels {}
 
-name : "Protagonist\n"
+name : "Protagonist"
+
 inventory {
-  name: "Shovel\n"
-  description : "description:\n fuck\n"
+  name: "Shovel"
+  description : " description: Wooden handle, broad flat blade."
   actions {
-    description : "description:\n You swung the hat\n",
-    name : "dig\n",
+    description : "description: Used for moving coal, earth, or snow.",
+    name : "dig",
     resultant_level {}
   }
 }
