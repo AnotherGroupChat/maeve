@@ -1,5 +1,6 @@
 syntax = "proto2";
 package Maeve;
+
 // TODO: break this into seperate proto files. This is just a nice and hacky way
 // define our schema quickly.
 
@@ -16,20 +17,23 @@ message Game {
     optional string name = 1; // Frank the troll.
     optional Stats stats = 2;
   }
-  message Level {
+
+  message Item {
+    optional string name = 1;             // e.g. Sword, hat etc..
+    optional string description = 2;      // e.g. Hard, flacid etc..
+    repeated Action actions = 3; // What the Item can do.
+  }
+
+  message Level  {
     message Entrances {
       optional string description = 1; // To the left there is a ladder.
-      optional Action action = 2;      // Climbed into the well, flew accross the sky.
+      optional Action action = 2;      // Climbed into the well, flew across the sky.
     }
     optional LevelId id = 1;
     optional string intro = 2;        // e.g "You entered the room!";
     repeated NPC npcs = 3;   // A troll is in the room.
     repeated Item items = 4; // Items in the room
-  }
-  message Item {
-    optional string name = 1;             // e.g. Sword, hat etc..
-    optional string description = 2;      // e.g. Hard, flacid etc..
-    repeated Action actions = 3; // What the Item can do.
+    repeated Entrances entrance = 5;
   }
 
   // State variables.

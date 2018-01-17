@@ -87,7 +87,7 @@ fn main() {
     };
 
     match result {
-        Ok(game) => println!("And the games begin!"), // Do something with the games here.
+        Ok(_game) => println!("And the games begin!"), // Do something with the games here.
         Err(error) => println!("Exit: {}", &error),
     }
 }
