@@ -14,13 +14,13 @@ const NEW_GAME_PATH: &str = "games/sample.pb";
 const GAME_FILE_PATH: &str = "games/";
 
 #[allow(unused_mut)]
-fn load(mut game: Game) -> Result<Game, &'static str> {
+fn load(mut game: Game) -> Result<Game, String> {
     println!("I see you've been a guest with us before.");
     println!("Welcome back {}.", game.get_name().trim());
     return Ok(game);
 }
 
-fn new(mut game: Game) -> Result<Game, &'static str> {
+fn new(mut game: Game) -> Result<Game, String> {
     println!("Welcome to Maeve, the hosts are here to serve you.");
     println!("What is your name?");
 
@@ -43,22 +43,22 @@ fn new(mut game: Game) -> Result<Game, &'static str> {
     return Ok(game);
 }
 
-fn extract_protobuf<F, M: MessageStatic>(path: &str, callback: F) -> Result<M, &'static str>
+fn extract_protobuf<F, M: MessageStatic>(path: &str, callback: F) -> Result<M, String>
 where
-    F: Fn(M) -> Result<M, &'static str>,
+    F: Fn(M) -> Result<M, String>,
 {
     return match File::open(&Path::new(path)) {
         Ok(mut is) => match protobuf::parse_from_reader::<M>(&mut is) {
             Ok(t) => callback(t),
-            Err(_) => Err("Failed to load file."),
+            Err(_) => Err(String::from("Failed to load file.")),
         },
-        Err(_) => Err("Failed to open file"),
+        Err(_) => Err(String::from("Failed to open file")),
     };
 }
 
-fn prompt_path<F, M: MessageStatic>(callback: F) -> Result<M, &'static str>
+fn prompt_path<F, M: MessageStatic>(callback: F) -> Result<M, String>
 where
-    F: Fn(M) -> Result<M, &'static str>,
+    F: Fn(M) -> Result<M, String>,
 {
     println!("Please provide the name of your save file:");
     let mut choice = String::new();
@@ -70,7 +70,7 @@ where
     return extract_protobuf(&choice, callback);
 }
 
-fn prompt() -> Result<Game, &'static str> {
+fn prompt() -> Result<Game, String> {
     loop {
         println!("Please select an option:");
         println!("1 - New Game");
@@ -90,7 +90,7 @@ fn prompt() -> Result<Game, &'static str> {
         match choice {
             1 => return extract_protobuf(NEW_GAME_PATH, new),
             2 => return prompt_path(load),
-            3 => return Err("We look forward to your next visit."),
+            3 => return Err(String::from("We look forward to your next visit.")),
             _ => println!("That is not how this works, choose again."),
         }
     }
@@ -111,9 +111,10 @@ fn main() {
     #[allow(unused_variables)]
     match result {
         Ok(game) => {
-            println!("And the games begin!"); // Do something with the games here.
+            println!("And the games begin!"), // Do something with the games here.
             //Call the interpreter
-        },
-        Err(error) => println!("Exit: {}", error),
+            //derpreter(game);
+        }
+        Err(error) => println!("Exit: {}", &error),
     }
 }
