@@ -10,15 +10,36 @@ mod protos;
 use protos::master::Game;
 use protobuf::core::MessageStatic;
 
-fn load(game: Game) -> Result<Game, String> {
+const NEW_GAME_PATH: &str = "games/sample.pb";
+const GAME_FILE_PATH: &str = "games/";
+
+#[allow(unused_mut)]
+fn load(mut game: Game) -> Result<Game, String> {
     println!("I see you've been a guest with us before.");
-    // Todo some logic for loading/validating games here.
+    println!("Welcome back {}.", game.get_name().trim());
     return Ok(game);
 }
 
-fn new(game: Game) -> Result<Game, String> {
+fn new(mut game: Game) -> Result<Game, String> {
     println!("Welcome to Maeve, the hosts are here to serve you.");
-    // Todo some logic for starting/validating games here.
+    println!("What is your name?");
+
+    let mut name = String::new();
+    io::stdin()
+        .read_line(&mut name)
+        .unwrap();
+
+    game.set_name(name);
+
+    let mut path = String::new();
+    println!("Hello {}, please enter the name of the new save file:", game.get_name().trim());
+    io::stdin()
+        .read_line(&mut path)
+        .unwrap();
+
+    let path = format!("{}{}", GAME_FILE_PATH, path.trim());
+    File::create(&Path::new(&path)).unwrap();
+
     return Ok(game);
 }
 
@@ -39,13 +60,14 @@ fn prompt_path<F, M: MessageStatic>(callback: F) -> Result<M, String>
 where
     F: Fn(M) -> Result<M, String>,
 {
-    println!("Please provide the path to the game:");
+    println!("Please provide the name of your save file:");
     let mut choice = String::new();
     io::stdin()
         .read_line(&mut choice)
         .expect("Failed to read input.");
+    let choice = format!("{}{}", GAME_FILE_PATH, choice.trim());
 
-    return extract_protobuf(&choice.trim(), callback);
+    return extract_protobuf(&choice, callback);
 }
 
 fn prompt() -> Result<Game, String> {
@@ -66,7 +88,7 @@ fn prompt() -> Result<Game, String> {
         };
 
         match choice {
-            1 => return prompt_path(new),
+            1 => return extract_protobuf(NEW_GAME_PATH, new),
             2 => return prompt_path(load),
             3 => return Err(String::from("We look forward to your next visit.")),
             _ => println!("That is not how this works, choose again."),
@@ -86,8 +108,13 @@ fn main() {
         (_, _) => prompt(),
     };
 
+    #[allow(unused_variables)]
     match result {
-        Ok(game) => println!("And the games begin!"), // Do something with the games here.
+        Ok(game) => {
+            println!("And the games begin!"), // Do something with the games here.
+            //Call the interpreter
+            //derpreter(game);
+        }
         Err(error) => println!("Exit: {}", &error),
     }
 }
