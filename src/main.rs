@@ -10,7 +10,7 @@ mod protos;
 use protos::master::Game;
 use protobuf::core::MessageStatic;
 
-const NEW_GAME_PATH: &str = "games/sample.pb";
+const NEW_GAME_PATH: &str = "games/game_design.pb";
 const GAME_FILE_PATH: &str = "games/";
 
 #[allow(unused_mut)]
