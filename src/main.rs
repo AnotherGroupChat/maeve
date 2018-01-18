@@ -111,10 +111,10 @@ fn main() {
     #[allow(unused_variables)]
     match result {
         Ok(game) => {
-            println!("And the games begin!"), // Do something with the games here.
+            println!("And the games begin!"); // Do something with the games here.
             //Call the interpreter
             //derpreter(game);
-        }
+        },
         Err(error) => println!("Exit: {}", &error),
     }
 }
