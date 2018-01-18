@@ -76,7 +76,6 @@ fn prompt() -> Result<Game, String> {
 
 fn main() {
     println!("Welcome to Maeve!");
-
     let yaml = load_yaml!("app.yaml");
     let matches = App::from_yaml(yaml).get_matches();
     let (load_game, new_game) = (matches.value_of("load"), matches.value_of("new"));

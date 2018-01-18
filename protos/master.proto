@@ -10,7 +10,7 @@ message Game {
     optional string name = 1; // Sweetwater, Ranch, Control Room, Cold Storage
     optional int32 level_id = 2; // 0,1,2,3,4,5
   }
-  message Stats {
+  message Stat {
     optional int32 stat_id = 1; // 0,1,2,3,4,5
     optional string name = 2; // k/d ratio, health, host or human
     optional int32 stat_value = 3; // 0-100 or bigger if necessary
@@ -22,7 +22,7 @@ message Game {
   }
   message NPC {
     optional string name = 1; // Frank the troll.
-    repeated Stats stats = 2;
+    repeated Stat stats = 2;
   }
 
   message Item {
@@ -32,7 +32,7 @@ message Game {
   }
 
   message Level  {
-    message Entrances {
+    message Entrance {
       optional string description = 1; // To the left there is a ladder.
       optional Action action = 2;      // Climbed into the well, flew across the sky.
     }
@@ -40,12 +40,12 @@ message Game {
     optional string intro = 2;        // e.g "You entered the room!";
     repeated NPC npcs = 3;   // A troll is in the room.
     repeated Item items = 4; // Items in the room
-    repeated Entrances entrance = 5;
+    repeated Entrance entrance = 5;
   }
 
   // State variables.
   optional string name = 1;
   repeated Level levels = 2;   // Game levels.
   repeated Item inventory = 3; // What you got.
-  repeated Stats stats = 4;
+  repeated Stat stats = 4;
 }
