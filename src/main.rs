@@ -114,7 +114,6 @@ fn main() {
             //Call the interpreter
             //derpreter(game);
         },
-
         Err(error) => println!("Exit: {}", &error),
     }
 }
