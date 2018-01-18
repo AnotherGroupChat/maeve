@@ -1,24 +1,47 @@
+name : "Protagonist"
+stats {
+  stat_id : 0
+  name : "Human"
+}
+stats {
+  stat_id : 1
+  name : "Health"
+  stat_value : 100
+}
+stats {
+  stat_id : 2
+  name : "Deaths"
+  stat_value : 2
+}
+
 levels {
     entrance {
       description : "Where I'm bound to stay Where you sleep all day,Where they hung the jerkThat invented workIn the Big Rock Candy Mountains"
       action {}
     }
-
-    intro : "Welcome to Westworld. "
+    id {
+      name : "Intro Level"
+      level_id : 0
+    }
+    intro : "We are here to serve you."
     npcs {
-      name : "NPC: Dolores",
-      stats {}
+      name : "Dolores"
+      stats {
+        stat_id : 0
+        name : "Host"
+      }
     }
 }
 
-name : "Protagonist"
-
 inventory {
   name: "Shovel"
-  description : " description: Wooden handle, broad flat blade."
+  description : "description: Wooden handle, broad flat blade."
   actions {
-    description : "description: Used for moving coal, earth, or snow.",
-    name : "dig",
-    resultant_level {}
+    description : "description: Used for moving coal, earth, or snow."
+    name : "dig"
+    resultant_level {
+      name : "Intro Level"
+      level_id : 0
+    }
   }
 }

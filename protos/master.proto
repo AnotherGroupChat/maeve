@@ -6,8 +6,15 @@ package Maeve;
 
 // An instance of a game to be loaded.
 message Game {
-  message LevelId {}
-  message Stats {}
+  message LevelId {
+    optional string name = 1; // Sweetwater, Ranch, Control Room, Cold Storage
+    optional int32 level_id = 2; // 0,1,2,3,4,5
+  }
+  message Stats {
+    optional int32 stat_id = 1; // 0,1,2,3,4,5
+    optional string name = 2; // k/d ratio, health, host or human
+    optional int32 stat_value = 3; // 0-100 or bigger if necessary
+  }
   message Action {
     optional string description = 1; // You swung the hat!
     optional string name = 2;        // "swing"
@@ -15,7 +22,7 @@ message Game {
   }
   message NPC {
     optional string name = 1; // Frank the troll.
-    optional Stats stats = 2;
+    repeated Stats stats = 2;
   }
 
   message Item {
@@ -40,5 +47,5 @@ message Game {
   optional string name = 1;
   repeated Level levels = 2;   // Game levels.
   repeated Item inventory = 3; // What you got.
-  optional Stats stats = 4;
+  repeated Stats stats = 4;
 }
