@@ -1,7 +1,16 @@
-Getting started on debian-based systems:
+How to build the game:
 
 > cargo install protobuf
+
+[Ubuntu]
 > sudo apt-get install protobuf-compiler
+
+[Arch]
+> sudo pacman -S protobuf
+
+[Mac]
+> brew install protobuf
+
 > ./build.sh
 > cargo build
 
