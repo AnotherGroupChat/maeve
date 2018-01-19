@@ -2,9 +2,9 @@
 
 Maeve is a text-based game based on the Westworld TV series.
 
-###How to build the game:
+### How to build the game:
 
-Go to [the Rust website] and download Rust.[rust-site]
+Go to [the Rust website] and download Rust.
 
 Then:
 
@@ -25,4 +25,4 @@ Then:
 > ./build.sh
 > cargo build
 
-[rust-site]: <https://www.rust-lang.org/en-US/>
+[the Rust website]: <https://www.rust-lang.org/en-US/>
