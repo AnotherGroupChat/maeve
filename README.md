@@ -8,21 +8,30 @@ Go to [the Rust website] and download Rust.
 
 Then once you've downloaded Rust:
 
-> git clone https://github.com/AnotherGroupChat/maeve
-> cd maeve
+```sh
+$ git clone https://github.com/AnotherGroupChat/maeve
+$ cd maeve
+$ cargo install protobuf
+```
 
-> cargo install protobuf
+- Ubuntu
+```sh
+$ sudo apt-get install protobuf-compiler
+```
 
-> - Ubuntu
-> sudo apt-get install protobuf-compiler
+- Arch
+```sh
+$ sudo pacman -S protobuf
+```
 
-> - Arch
-> sudo pacman -S protobuf
+- Mac
+```sh
+$ brew install protobuf
+```
 
-> - Mac
-> brew install protobuf
-
-> ./build.sh
-> cargo build
+```sh
+$ ./build.sh
+$ cargo build
+```
 
 [the Rust website]: <https://www.rust-lang.org/en-US/>
