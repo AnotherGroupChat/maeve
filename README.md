@@ -48,4 +48,13 @@ maeve/games/game_design.pb
 After you have selected your file, the game will ask you where you would like to create a new save file; you
 can save it wherever you like.
 
+### Talking to the Interpreter:
+
+to be continued...
+
+### Creating your own games:
+
+to be continued...
+
+
 [the Rust website]: <https://www.rust-lang.org/en-US/>
