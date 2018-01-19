@@ -1,7 +1,10 @@
-use protos::master::Game;
 use ::std;
 use ::std::fs::File;
 use ::std::path::Path;
+
+use protos::master::Game;
+
+
 #[allow(unused_mut)]
 pub fn load(mut game: Game) -> Result<Game, String> {
     println!("I see you've been a guest with us before.");
