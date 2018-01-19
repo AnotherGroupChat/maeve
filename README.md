@@ -6,20 +6,20 @@ Maeve is a text-based game based on the Westworld TV series.
 
 Go to [the Rust website] and download Rust.
 
-Then:
+Then once you've downloaded Rust:
 
 > git clone https://github.com/AnotherGroupChat/maeve
 > cd maeve
 
 > cargo install protobuf
 
-- Ubuntu
+> - Ubuntu
 > sudo apt-get install protobuf-compiler
 
-- Arch
+> - Arch
 > sudo pacman -S protobuf
 
-- Mac
+> - Mac
 > brew install protobuf
 
 > ./build.sh
