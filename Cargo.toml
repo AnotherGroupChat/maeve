@@ -2,6 +2,13 @@
 name = "maeve"
 version = "0.1.0"
 authors = ["dylan <contact@postmodern.technology>"]
+readme = "README.md"
+license = "MIT"
+keywords = ["game"]
+categories = ["command-line-interface"]
+description = """
+null
+"""
 
 [dependencies]
 protobuf = "1.4.3"
