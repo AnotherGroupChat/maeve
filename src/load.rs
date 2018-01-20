@@ -1,6 +1,6 @@
-use ::std;
-use ::std::fs::File;
-use ::std::path::Path;
+use std;
+use std::fs::File;
+use std::path::Path;
 
 use protos::master::Game;
 
@@ -17,17 +17,16 @@ pub fn new(mut game: Game) -> Result<Game, String> {
     println!("What is your name?");
 
     let mut name = String::new();
-    std::io::stdin()
-        .read_line(&mut name)
-        .unwrap();
+    std::io::stdin().read_line(&mut name).unwrap();
 
     game.set_name(name);
 
     let mut path = String::new();
-    println!("Hello {}, please enter the name of the new save file:", game.get_name().trim());
-    std::io::stdin()
-        .read_line(&mut path)
-        .unwrap();
+    println!(
+        "Hello {}, please enter the name of the new save file:",
+        game.get_name().trim()
+    );
+    std::io::stdin().read_line(&mut path).unwrap();
 
     let path = path.trim();
     File::create(&Path::new(&path)).unwrap();

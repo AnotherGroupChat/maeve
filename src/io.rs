@@ -1,6 +1,6 @@
-use ::std;
-use ::std::fs::File;
-use ::std::path::Path;
+use std;
+use std::fs::File;
+use std::path::Path;
 
 use protobuf::core::MessageStatic;
 

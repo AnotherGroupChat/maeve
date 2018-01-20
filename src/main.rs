@@ -51,9 +51,9 @@ fn main() {
     match result {
         Ok(game) => {
             println!("And the games begin!"); // Do something with the games here.
-            //Call the interpreter
-            //derpreter(game);
-        },
+                                              //Call the interpreter
+                                              //derpreter(game);
+        }
         Err(error) => println!("Exit: {}", &error),
     }
 }
