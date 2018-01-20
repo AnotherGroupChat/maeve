@@ -1,35 +1,30 @@
-use std;
 use std::fs::File;
 use std::path::Path;
+use screen::Interfaceable;
 
 use protos::master::Game;
 
 
 #[allow(unused_mut)]
-pub fn load(mut game: Game) -> Result<Game, String> {
-    println!("I see you've been a guest with us before.");
-    println!("Welcome back {}.", game.get_name().trim());
+pub fn load<I: Interfaceable>(src: &mut I, mut game: Game) -> Result<Game, String> {
+    src.print("I see you've been a guest with us before.");
+    src.print(&format!("Welcome back {}.", game.get_name()));
     return Ok(game);
 }
 
-pub fn new(mut game: Game) -> Result<Game, String> {
-    println!("Welcome to Maeve, the hosts are here to serve you.");
-    println!("What is your name?");
+pub fn new<I: Interfaceable>(src: &mut I, mut game: Game) -> Result<Game, String> {
+    src.print("Welcome to Maeve, the hosts are here to serve you.");
+    src.print("What is your name?");
 
-    let mut name = String::new();
-    std::io::stdin().read_line(&mut name).unwrap();
+    let name = src.prompt();
+    game.set_name(name.clone());
 
-    game.set_name(name);
-
-    let mut path = String::new();
-    println!(
+    src.print(&format!(
         "Hello {}, please enter the name of the new save file:",
-        game.get_name().trim()
-    );
-    std::io::stdin().read_line(&mut path).unwrap();
+        &name
+    ));
+    let path = src.prompt();
 
-    let path = path.trim();
     File::create(&Path::new(&path)).unwrap();
-
     return Ok(game);
 }

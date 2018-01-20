@@ -12,6 +12,7 @@ args:
     - new:
         help: Path to a new game. 
         short: n
+        long: new 
         global: true
         takes_value: true
         conflicts_with:
