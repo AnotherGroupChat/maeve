@@ -17,7 +17,6 @@ pub fn new<I: Interfaceable>(src: &mut I, mut game: Game) -> Result<Game, String
     src.print("What is your name?");
 
     let name = src.prompt();
-
     game.set_name(name.clone());
 
     src.print(&format!(
