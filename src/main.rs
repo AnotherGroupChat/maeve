@@ -10,50 +10,44 @@ use io::*;
 mod load;
 use load::*;
 
-fn prompt() -> Result<Game, String> {
+mod screen;
+use screen::Interfaceable;
+
+fn prompt<I: screen::Interfaceable>(src: &mut I) -> Result<Game, String> {
     loop {
-        println!("Please select an option:");
-        println!("1 - New Game");
-        println!("2 - Load Game");
-        println!("3 - Exit Game");
+        src.print("Please select an option:");
+        src.print("1 - New Game");
+        src.print("2 - Load Game");
+        src.print("3 - Exit Game");
 
-        let mut choice = String::new();
-        std::io::stdin()
-            .read_line(&mut choice)
-            .expect("Failed to read input.");
-
-        let choice: u32 = match choice.trim().parse() {
-            Ok(num) => num,
-            Err(_) => continue,
-        };
-
-        match choice {
-            1 => return prompt_path(new),
-            2 => return prompt_path(load),
-            3 => return Err(String::from("We look forward to your next visit.")),
+        match src.prompt().parse() {
+            Ok(1) => return prompt_path(src, new),
+            Ok(2) => return prompt_path(src, load),
+            Ok(3) => return Err(String::from("We look forward to your next visit.")),
             _ => println!("That is not how this works, choose again."),
         }
     }
 }
 
 fn main() {
-    println!("Welcome to Maeve!");
+    let mut src = screen::Screen::new();
+    src.print("Welcome to Maeve!");
+
     let yaml = load_yaml!("app.yaml");
     let matches = App::from_yaml(yaml).get_matches();
     let (load_game, new_game) = (matches.value_of("load"), matches.value_of("new"));
     let result = match (load_game, new_game) {
-        (Some(path), _) => extract_protobuf(path, load),
-        (_, Some(path)) => extract_protobuf(path, new),
-        (_, _) => prompt(),
+        (Some(path), _) => extract_protobuf(&mut src, path, load),
+        (_, Some(path)) => extract_protobuf(&mut src, path, new),
+        (_, _) => prompt(&mut src),
     };
 
-    #[allow(unused_variables)]
     match result {
-        Ok(game) => {
-            println!("And the games begin!"); // Do something with the games here.
-            //Call the interpreter
-            //derpreter(game);
-        },
-        Err(error) => println!("Exit: {}", &error),
+        Ok(_game) => {
+            src.print("And the games begin!"); // Do something with the games here.
+                                               //Call the interpreter
+                                               //derpreter(game);
+        }
+        Err(error) => src.print(&format!("Exit: {}", &error)),
     }
 }
