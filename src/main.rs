@@ -1,17 +1,16 @@
 #[macro_use]
 extern crate clap;
 extern crate protobuf;
+extern crate maeve;
+
 use clap::App;
-
-mod protos;
-use protos::master::Game;
-mod io;
-use io::*;
-mod load;
-use load::*;
-
-mod screen;
-use screen::Interfaceable;
+use maeve::screen;
+use maeve::io::extract_protobuf;
+use maeve::io::prompt_path;
+use maeve::load::load;
+use maeve::load::new;
+use maeve::protos::master::Game;
+use maeve::screen::Interfaceable;
 
 fn prompt<I: screen::Interfaceable>(src: &mut I) -> Result<Game, String> {
     loop {
