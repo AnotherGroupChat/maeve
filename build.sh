@@ -1,5 +1,7 @@
 #Clear out old generated files
-rm src/protos/master.rs
+if [ -z "src/protos/master.rs" ]; then
+  rm src/protos/master.rs
+fi
 
 # Builds the game from a text file into the needed binary format.
 cat games/game_design.pbtxt | protoc --encode=Maeve.Game protos/*.proto > games/game_design.pb
