@@ -1,16 +1,18 @@
+//! Entry point for commandline interaction with maeve interpreter.
+
 #[macro_use]
 extern crate clap;
-extern crate protobuf;
 extern crate maeve;
+extern crate protobuf;
 
 use clap::App;
-use maeve::screen;
 use maeve::io::extract_protobuf;
 use maeve::io::prompt_path;
 use maeve::load::load;
 use maeve::load::new;
 use maeve::protos::master::Game;
 use maeve::screen::Interfaceable;
+use maeve::screen::Screen;
 
 fn prompt<I: screen::Interfaceable>(src: &mut I) -> Result<Game, String> {
     loop {
@@ -29,7 +31,7 @@ fn prompt<I: screen::Interfaceable>(src: &mut I) -> Result<Game, String> {
 }
 
 fn main() {
-    let mut src = screen::Screen::new();
+    let mut src = Screen::new();
     src.print("Welcome to Maeve!");
 
     let yaml = load_yaml!("app.yaml");

@@ -1,6 +1,6 @@
 # Maeve
 
-Maeve is a text-based game based on the Westworld TV series.
+Maeve is an interpreter for text-based games. The end goal is support for a community-made game based on the Westworld TV series.
 
 ### How to build the game:
 
@@ -17,23 +17,24 @@ $ cargo install protobuf
 - Ubuntu
 ```sh
 $ sudo apt-get install protobuf-compiler
-$ ./build.sh
-$ cargo build
 ```
 
 - Arch
 ```sh
 $ sudo pacman -S protobuf
-$ ./build.sh
-$ cargo build
 ```
 
 - Mac
 ```sh
 $ brew install protobuf
+```
+
+and then compile with
+```
 $ ./build.sh
 $ cargo build
 ```
+
 Once you've completed the above instructions the game should now be ready to run with:
 
 ```sh
@@ -47,6 +48,18 @@ maeve/games/game_design.pb
 ```
 After you have selected your file, the game will ask you where you would like to create a new save file; you
 can save it wherever you like.
+
+#### Compilation Flags:
+| Flag                   | Description    |
+| ------------------     | -------------: |
+| --features=pretty      | Implements readlib, which provides a user-friendly cli. |
+| --features=default     | Implements stdio and stdout, which provides a not-so-user-friendly cli. |
+
+#### Runtime Flags:
+| Flag                   | Description    |
+| ------------------     | -------------: |
+| --new=<game file>      | Provides a game file which will start a new game. |
+| --load=<load file>     | Provides a load file which will continue a game. |
 
 ### Talking to the Interpreter:
 

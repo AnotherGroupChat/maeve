@@ -1,9 +1,9 @@
+//! Operations to manage loaded protos.
+
 use std::fs::File;
 use std::path::Path;
-use screen::Interfaceable;
-
 use protos::master::Game;
-
+use screen::Interfaceable;
 
 #[allow(unused_mut)]
 pub fn load<I: Interfaceable>(src: &mut I, mut game: Game) -> Result<Game, String> {

@@ -1,3 +1,8 @@
+//! Interfaces with the rest of the library. Each intrface can be compiled
+//! independently. Supported Interfaces:
+//!     - stdout, stdin
+//!     - readline
+
 #[cfg(feature = "pretty")]
 extern crate rustyline;
 #[cfg(feature = "pretty")]

@@ -1,9 +1,9 @@
+//! Operations that interact with the file system.
+
 use std::fs::File;
 use std::path::Path;
-
 use protobuf::core::MessageStatic;
 use screen::Interfaceable;
-
 
 pub fn extract_protobuf<F, M: MessageStatic, I: Interfaceable>(
     src: &mut I,
