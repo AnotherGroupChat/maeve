@@ -1,3 +1,6 @@
+#!/bin/bash
+# TODO(#21): Replace file with build.rs
+
 # either use 'game_design' as the default or
 # a user supplied name
 filename=${1:-"game_design"}
