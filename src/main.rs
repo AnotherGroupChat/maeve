@@ -14,7 +14,7 @@ use maeve::protos::master::Game;
 use maeve::screen::Interfaceable;
 use maeve::screen::Screen;
 
-fn prompt<I: screen::Interfaceable>(src: &mut I) -> Result<Game, String> {
+fn prompt<I: Interfaceable>(src: &mut I) -> Result<Game, String> {
     loop {
         src.print("Please select an option:");
         src.print("1 - New Game");
