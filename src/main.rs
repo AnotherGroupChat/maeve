@@ -6,6 +6,7 @@ extern crate maeve;
 extern crate protobuf;
 
 use clap::App;
+use maeve::interpreter::token::tokenize;
 use maeve::io::extract_protobuf;
 use maeve::io::prompt_path;
 use maeve::load::load;
@@ -46,8 +47,7 @@ fn main() {
     match result {
         Ok(_game) => {
             src.print("And the games begin!"); // Do something with the games here.
-                                               //Call the interpreter
-                                               //derpreter(game);
+                                               // Call the interpreter. derpreter(game);
         }
         Err(error) => src.print(&format!("Exit: {}", &error)),
     }
