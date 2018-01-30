@@ -1,4 +1,4 @@
-# Maeve
+# Maeve [![Build Status](https://travis-ci.org/AnotherGroupChat/maeve.svg?branch=master)](https://travis-ci.org/AnotherGroupChat/maeve)
 
 Maeve is an interpreter for text-based games. The end goal is support for a community-made game based on the Westworld TV series.
 
@@ -58,8 +58,8 @@ can save it wherever you like.
 #### Runtime Flags:
 | Flag                   | Description    |
 | ------------------     | -------------: |
-| --new=<game file>      | Provides a game file which will start a new game. |
-| --load=<load file>     | Provides a load file which will continue a game. |
+| --new=\<game file\>      | Provides a game file which will start a new game. |
+| --load=\<load file\>     | Provides a load file which will continue a game. |
 
 ### Talking to the Interpreter:
 
