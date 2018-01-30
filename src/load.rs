@@ -6,13 +6,19 @@ use protos::master::Game;
 use screen::Interfaceable;
 
 #[allow(unused_mut)]
-pub fn load<I: Interfaceable>(src: &mut I, mut game: Game) -> Result<Game, String> {
+pub fn load<I: Interfaceable>(
+    src: &mut I,
+    mut game: Game,
+) -> Result<Game, String> {
     src.print("I see you've been a guest with us before.");
     src.print(&format!("Welcome back {}.", game.get_name()));
     return Ok(game);
 }
 
-pub fn new<I: Interfaceable>(src: &mut I, mut game: Game) -> Result<Game, String> {
+pub fn new<I: Interfaceable>(
+    src: &mut I,
+    mut game: Game,
+) -> Result<Game, String> {
     src.print("Welcome to Maeve, the hosts are here to serve you.");
     src.print("What is your name?");
 
