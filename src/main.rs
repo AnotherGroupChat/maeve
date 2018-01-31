@@ -6,6 +6,7 @@ extern crate maeve;
 extern crate protobuf;
 
 use clap::App;
+use maeve::evaluate::evaluate;
 use maeve::io::extract_protobuf;
 use maeve::io::prompt_path;
 use maeve::load::load;
@@ -47,9 +48,10 @@ fn main() {
     };
 
     match result {
-        Ok(_game) => {
+        Ok(game) => {
             src.print("And the games begin!");
             // Do something with the games here.
+            evaluate(&mut src, game);
         }
         Err(error) => src.print(&format!("Exit: {}", &error)),
     }
