@@ -29,6 +29,11 @@ $ sudo pacman -S protobuf
 $ brew install protobuf
 ```
 
+then add `protoc-gen-rust` to $PATH (see [rust-protobuf](https://github.com/stepancheg/rust-protobuf) for more details)
+```
+$ PATH="$HOME/.cargo/bin:$PATH"
+```
+
 and then compile with
 ```
 $ ./build.sh
@@ -44,7 +49,7 @@ $ cargo run
 When starting a new game, you will be asked which file you would like to load, currently the file you should
 choose is:
 ```sh
-maeve/games/game_design.pb
+games/game_design.pb
 ```
 After you have selected your file, the game will ask you where you would like to create a new save file; you
 can save it wherever you like.
