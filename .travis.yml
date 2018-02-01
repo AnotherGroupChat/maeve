@@ -1,0 +1,25 @@
+sudo: true
+language: rust
+cache: cargo
+rust:
+  - stable
+
+addons:
+  apt:
+    packages:
+      - protobuf-compiler
+      - build-essential
+
+install:
+  - rustup install nightly
+  - rustup component add --toolchain nightly rustfmt-preview
+
+before_script:
+  - export PATH=$PATH:~/.cargo/bin
+  - cargo install rustfmt || true
+
+script:
+  - ./build.sh
+  - cargo +nightly fmt -- --write-mode=diff
+  - cargo build
+  - cargo test
