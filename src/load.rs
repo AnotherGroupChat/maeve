@@ -15,6 +15,13 @@ pub fn load<I: Interfaceable>(
     return Ok(game);
 }
 
+pub fn save<I: Interfaceable>(
+    src: &mut I,
+    mut game: Game,
+) -> Result<Game, String> {
+    return Ok(game);
+}
+
 pub fn new<I: Interfaceable>(
     src: &mut I,
     mut game: Game,
