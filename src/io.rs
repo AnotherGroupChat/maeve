@@ -1,9 +1,13 @@
 //! Operations that interact with the file system.
 
+use load::save;
+use protobuf::CodedOutputStream;
+use protobuf::Message;
+use protobuf::core::MessageStatic;
+use protos::master::Game;
+use screen::Interfaceable;
 use std::fs::File;
 use std::path::Path;
-use protobuf::core::MessageStatic;
-use screen::Interfaceable;
 
 pub fn extract_protobuf<F, M: MessageStatic, I: Interfaceable>(
     src: &mut I,
@@ -22,6 +26,25 @@ where
     };
 }
 
+pub fn write_protobuf<I: Interfaceable>(
+    src: &mut I,
+    game: Game,
+) -> Result<Game, String> {
+    let mut file = save(src, &game);
+    let mut cos = CodedOutputStream::new(&mut file);
+    match game.write_to(&mut cos) {
+        Ok(_) => src.print("Saving the game"),
+        Err(_) => {
+            return Err(String::from("Error attempting to write save file."));
+        }
+    };
+    match cos.flush() {
+        Ok(_) => src.print("Game saved!"),
+        Err(_) => return Err(String::from("Error flushing write buffer.")),
+    };
+    return Ok(game);
+}
+
 pub fn prompt_path<F, M: MessageStatic, I: Interfaceable>(
     src: &mut I,
     callback: F,
@@ -29,7 +52,7 @@ pub fn prompt_path<F, M: MessageStatic, I: Interfaceable>(
 where
     F: Fn(&mut I, M) -> Result<M, String>,
 {
-    src.print("Please provide the name of your save file:");
+    src.print("Please provide the name of save file you'd like to load:");
     let choice = src.prompt();
 
     return extract_protobuf(src, &choice, callback);
