@@ -3,7 +3,10 @@
 use std::fs::File;
 use std::path::Path;
 use protobuf::core::MessageStatic;
+use protobuf::CodedOutputStream;
+use protobuf::Message; // This is imported for the flush() function
 use screen::Interfaceable;
+use protos::master::Game;
 
 pub fn extract_protobuf<F, M: MessageStatic, I: Interfaceable>(
     src: &mut I,
@@ -22,6 +25,25 @@ where
     };
 }
 
+pub fn write_protobuf<I: Interfaceable>(
+    src: &mut I,
+    mut game: Game,
+) -> Result<Game, String>
+{
+    src.print(&format!(
+        "Hello {}, please enter the name of the new save file:",
+        game.get_name()
+    ));
+    let path = src.prompt();
+
+    let mut file = File::create(&Path::new(&path)).unwrap();
+
+    let mut cos = CodedOutputStream::new(&mut file);
+    game.write_to(&mut cos);
+    cos.flush();
+    return Ok(game);
+}
+
 pub fn prompt_path<F, M: MessageStatic, I: Interfaceable>(
     src: &mut I,
     callback: F,
@@ -29,7 +51,7 @@ pub fn prompt_path<F, M: MessageStatic, I: Interfaceable>(
 where
     F: Fn(&mut I, M) -> Result<M, String>,
 {
-    src.print("Please provide the name of your save file:");
+    src.print("Please provide the name of save file you'd like to load:");
     let choice = src.prompt();
 
     return extract_protobuf(src, &choice, callback);
