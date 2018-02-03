@@ -56,9 +56,7 @@ impl Interfaceable for PrettyPrompt {
     }
 
     fn confirm(&self) {
-        println!(
-            "This file already exists, would you like to overwrite it?",
-        );
+        println!("This file already exists, would you like to overwrite it?");
         println!("1 - Yes");
         println!("2 - No");
     }
@@ -86,9 +84,7 @@ impl Interfaceable for BasicPrompt {
     }
 
     fn confirm(&self) {
-        println!(
-            "This file already exists, would you like to overwrite it?",
-        );
+        println!("This file already exists, would you like to overwrite it?");
         println!("1 - Yes");
         println!("2 - No");
     }
