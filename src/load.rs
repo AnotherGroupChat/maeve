@@ -29,3 +29,40 @@ pub fn new<I: Interfaceable>(
     game.set_name(name.clone());
     return write_protobuf(src, game);
 }
+
+pub fn save<I: Interfaceable>(
+    src: &mut I,
+    game: &Game,
+) -> File {
+
+    let mut path;
+    let mut file;
+    loop {
+        src.print(&format!(
+            "Hello {}, please enter the name of the new save file:",
+            game.get_name()
+        ));
+
+        path = src.prompt();
+
+        if Path::new(&path).exists() {
+            src.print("This file already exists, would you like to overwrite it?");
+            src.print("1 - Yes");
+            src.print("2 - No");
+            match src.prompt().parse() {
+                Ok(1) => {
+                    file = File::create(&Path::new(&path)).unwrap();
+                    break;
+                }
+                _ => {
+                    src.print("Ok let's try again then...");
+                    continue;
+                }
+            };
+        } else {
+            file = File::create(&Path::new(&path)).unwrap();
+            break;
+        }
+    }
+    return file;
+}

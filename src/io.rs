@@ -4,9 +4,10 @@ use std::fs::File;
 use std::path::Path;
 use protobuf::core::MessageStatic;
 use protobuf::CodedOutputStream;
-use protobuf::Message; // This is imported for the flush() function
+use protobuf::Message; 
 use screen::Interfaceable;
 use protos::master::Game;
+use load::save;
 
 pub fn extract_protobuf<F, M: MessageStatic, I: Interfaceable>(
     src: &mut I,
@@ -31,38 +32,8 @@ pub fn write_protobuf<I: Interfaceable>(
     src: &mut I,
     mut game: Game,
 ) -> Result<Game, String> {
-    let mut path;
-    let mut file;
-    loop {
-        src.print(&format!(
-            "Hello {}, please enter the name of the new save file:",
-            game.get_name()
-        ));
 
-        path = src.prompt();
-
-        if Path::new(&path).exists() {
-            src.print(
-                "This file already exists, would you like to overwrite it?",
-            );
-            src.print("1 - Yes");
-            src.print("2 - No");
-            match src.prompt().parse() {
-                Ok(1) => {
-                    file = File::create(&Path::new(&path)).unwrap();
-                    break;
-                }
-                _ => {
-                    src.print("Ok let's try again then...");
-                    continue;
-                }
-            };
-        } else {
-            file = File::create(&Path::new(&path)).unwrap();
-            break;
-        }
-    }
-
+    let mut file = save(src, &game);
     let mut cos = CodedOutputStream::new(&mut file);
     game.write_to(&mut cos);
     cos.flush();
