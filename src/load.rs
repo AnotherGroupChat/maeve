@@ -1,10 +1,10 @@
 //! Operations to manage loaded protos.
 
-use std::fs::File;
-use std::path::Path;
+use io::write_protobuf;
 use protos::master::Game;
 use screen::Interfaceable;
-use io::write_protobuf;
+use std::fs::File;
+use std::path::Path;
 
 #[allow(unused_mut)]
 pub fn load<I: Interfaceable>(
@@ -40,11 +40,7 @@ pub fn save<I: Interfaceable>(src: &mut I, game: &Game) -> File {
         path = src.prompt();
 
         if Path::new(&path).exists() {
-            src.print(
-                "This file already exists, would you like to overwrite it?",
-            );
-            src.print("1 - Yes");
-            src.print("2 - No");
+            src.confirm();
             match src.prompt().parse() {
                 Ok(1) => {
                     file = File::create(&Path::new(&path)).unwrap();

@@ -15,6 +15,7 @@ pub trait Interfaceable {
     fn new() -> Self;
     fn print(&self, &str);
     fn prompt(&mut self) -> String;
+    fn confirm(&self);
 }
 
 #[cfg(feature = "pretty")]
@@ -53,6 +54,14 @@ impl Interfaceable for PrettyPrompt {
             Err(_) => String::from("quit"),
         };
     }
+
+    fn confirm(&self) {
+        println!(
+            "This file already exists, would you like to overwrite it?",
+        );
+        println!("1 - Yes");
+        println!("2 - No");
+    }
 }
 
 #[cfg(not(feature = "pretty"))]
@@ -74,6 +83,14 @@ impl Interfaceable for BasicPrompt {
             .read_line(&mut choice)
             .expect("Failed to read input.");
         return String::from(choice.trim());
+    }
+
+    fn confirm(&self) {
+        println!(
+            "This file already exists, would you like to overwrite it?",
+        );
+        println!("1 - Yes");
+        println!("2 - No");
     }
 }
 

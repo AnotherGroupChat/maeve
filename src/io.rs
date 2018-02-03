@@ -1,13 +1,13 @@
 //! Operations that interact with the file system.
 
 use load::save;
-use std::fs::File;
-use std::path::Path;
-use protobuf::core::MessageStatic;
 use protobuf::CodedOutputStream;
 use protobuf::Message;
+use protobuf::core::MessageStatic;
 use protos::master::Game;
 use screen::Interfaceable;
+use std::fs::File;
+use std::path::Path;
 
 pub fn extract_protobuf<F, M: MessageStatic, I: Interfaceable>(
     src: &mut I,
@@ -32,8 +32,14 @@ pub fn write_protobuf<I: Interfaceable>(
 ) -> Result<Game, String> {
     let mut file = save(src, &game);
     let mut cos = CodedOutputStream::new(&mut file);
-    game.write_to(&mut cos).unwrap();
-    cos.flush().unwrap();
+    match game.write_to(&mut cos){
+        Ok(_) => src.print("Saving the game"),
+        Err(_) => return Err(String::from("Error attempting to write save file.")),
+    };
+    match cos.flush() {
+        Ok(_) => src.print("Game saved!"),
+        Err(_) => return Err(String::from("Error flushing write buffer.")),
+    };
     return Ok(game);
 }
 
