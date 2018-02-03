@@ -35,7 +35,7 @@ pub fn write_protobuf<I: Interfaceable>(
     match game.write_to(&mut cos) {
         Ok(_) => src.print("Saving the game"),
         Err(_) => {
-            return Err(String::from("Error attempting to write save file.")),
+            return Err(String::from("Error attempting to write save file."));
         }
     };
     match cos.flush() {
