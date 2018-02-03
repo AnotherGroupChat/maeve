@@ -5,7 +5,7 @@ use std::fs::File;
 use std::path::Path;
 use protobuf::core::MessageStatic;
 use protobuf::CodedOutputStream;
-use protobuf::Message; 
+use protobuf::Message;
 use protos::master::Game;
 use screen::Interfaceable;
 
