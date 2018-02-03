@@ -28,12 +28,12 @@ where
 
 pub fn write_protobuf<I: Interfaceable>(
     src: &mut I,
-    mut game: Game,
+    game: Game,
 ) -> Result<Game, String> {
     let mut file = save(src, &game);
     let mut cos = CodedOutputStream::new(&mut file);
-    game.write_to(&mut cos);
-    cos.flush();
+    game.write_to(&mut cos).unwrap();
+    cos.flush().unwrap();
     return Ok(game);
 }
 

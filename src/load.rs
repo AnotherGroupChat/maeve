@@ -4,8 +4,6 @@ use std::fs::File;
 use std::path::Path;
 use protos::master::Game;
 use screen::Interfaceable;
-use protobuf::CodedOutputStream;
-use protobuf::Message;
 use io::write_protobuf;
 
 #[allow(unused_mut)]
@@ -30,13 +28,9 @@ pub fn new<I: Interfaceable>(
     return write_protobuf(src, game);
 }
 
-pub fn save<I: Interfaceable>(
-    src: &mut I,
-    game: &Game,
-) -> File {
-
+pub fn save<I: Interfaceable>(src: &mut I, game: &Game,) -> File {
     let mut path;
-    let mut file;
+    let file;
     loop {
         src.print(&format!(
             "Hello {}, please enter the name of the new save file:",
@@ -46,7 +40,9 @@ pub fn save<I: Interfaceable>(
         path = src.prompt();
 
         if Path::new(&path).exists() {
-            src.print("This file already exists, would you like to overwrite it?");
+            src.print(
+                "This file already exists, would you like to overwrite it?"
+            );
             src.print("1 - Yes");
             src.print("2 - No");
             match src.prompt().parse() {
