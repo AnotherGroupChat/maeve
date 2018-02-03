@@ -19,8 +19,8 @@ where
 {
     return match File::open(&Path::new(path)) {
         Ok(mut is) => match ::protobuf::parse_from_reader::<M>(&mut is) {
-                Ok(t) => callback(src, t),
-                Err(_) => Err(String::from("Failed to load file.")),
+            Ok(t) => callback(src, t),
+            Err(_) => Err(String::from("Failed to load file.")),
         },
         Err(_) => Err(String::from("Failed to open file")),
     };

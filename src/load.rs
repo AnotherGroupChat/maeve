@@ -28,7 +28,7 @@ pub fn new<I: Interfaceable>(
     return write_protobuf(src, game);
 }
 
-pub fn save<I: Interfaceable>(src: &mut I, game: &Game,) -> File {
+pub fn save<I: Interfaceable>(src: &mut I, game: &Game) -> File {
     let mut path;
     let file;
     loop {
@@ -41,7 +41,7 @@ pub fn save<I: Interfaceable>(src: &mut I, game: &Game,) -> File {
 
         if Path::new(&path).exists() {
             src.print(
-                "This file already exists, would you like to overwrite it?"
+                "This file already exists, would you like to overwrite it?",
             );
             src.print("1 - Yes");
             src.print("2 - No");
