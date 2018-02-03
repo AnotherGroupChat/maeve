@@ -2,6 +2,7 @@
 
 extern crate protobuf;
 
+pub mod evaluate;
 pub mod interpreter;
 pub mod io;
 pub mod load;
