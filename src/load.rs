@@ -34,7 +34,7 @@ pub fn save<I: Interfaceable>(
 ) -> Result<(), String> {
     src.print(&format!(
         "Please enter the name of the new save file, \
-         or hit enter to use the default location({}):",
+         or hit enter to use the default location ({}):",
         game.get_save_path()
     ));
 

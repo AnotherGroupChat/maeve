@@ -1,4 +1,5 @@
 name : "Protagonist"
+save_path: "games/session.pb"
 stats {
   stat_id : 0
   name : "Human"
