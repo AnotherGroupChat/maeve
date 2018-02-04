@@ -45,7 +45,7 @@ message Game {
 
   // State variables.
   optional string name = 1;
-  optional string save_path = 2;
+  optional string save_path = 2 [default = "sample.pb"];
   repeated Level levels = 3;   // Game levels.
   repeated Item inventory = 4; // What you got.
   repeated Stat stats = 5;
