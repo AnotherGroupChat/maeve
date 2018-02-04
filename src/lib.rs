@@ -2,6 +2,9 @@
 
 extern crate protobuf;
 
+#[macro_use]
+mod util;
+
 pub mod evaluate;
 pub mod interpreter;
 pub mod io;

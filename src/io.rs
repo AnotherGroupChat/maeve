@@ -1,10 +1,8 @@
 //! Operations that interact with the file system.
 
-use load::save;
 use protobuf::CodedOutputStream;
 use protobuf::Message;
 use protobuf::core::MessageStatic;
-use protos::master::Game;
 use screen::Interfaceable;
 use std::fs::File;
 use std::path::Path;
@@ -26,23 +24,16 @@ where
     };
 }
 
-pub fn write_protobuf<I: Interfaceable>(
-    src: &mut I,
-    game: Game,
-) -> Result<Game, String> {
-    let mut file = save(src, &game);
+pub fn write_protobuf<M: Message>(path: &str, msg: &M) -> Result<(), String> {
+    let mut file =
+        maybe_bail!(File::create(&Path::new(&path)), "Error creating file.");
     let mut cos = CodedOutputStream::new(&mut file);
-    match game.write_to(&mut cos) {
-        Ok(_) => src.print("Saving the game"),
-        Err(_) => {
-            return Err(String::from("Error attempting to write save file."));
-        }
-    };
-    match cos.flush() {
-        Ok(_) => src.print("Game saved!"),
-        Err(_) => return Err(String::from("Error flushing write buffer.")),
-    };
-    return Ok(game);
+    maybe_bail!(
+        msg.write_to(&mut cos),
+        "Error attempting to write save file."
+    );
+    maybe_bail!(cos.flush(), "Error flushing write buffer.");
+    return Ok(());
 }
 
 pub fn prompt_path<F, M: MessageStatic, I: Interfaceable>(

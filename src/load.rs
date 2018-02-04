@@ -3,7 +3,6 @@
 use io::write_protobuf;
 use protos::master::Game;
 use screen::Interfaceable;
-use std::fs::File;
 use std::path::Path;
 
 #[allow(unused_mut)]
@@ -25,36 +24,31 @@ pub fn new<I: Interfaceable>(
 
     let name = src.prompt();
     game.set_name(name.clone());
-    return write_protobuf(src, game);
+    maybe_bail!(save(src, &mut game));
+    return Ok(game);
 }
 
-pub fn save<I: Interfaceable>(src: &mut I, game: &Game) -> File {
-    let mut path;
-    let file;
-    loop {
-        src.print(&format!(
-            "Hello {}, please enter the name of the new save file:",
-            game.get_name()
-        ));
+pub fn save<I: Interfaceable>(
+    src: &mut I,
+    game: &mut Game,
+) -> Result<(), String> {
+    src.print(&format!(
+        "Please enter the name of the new save file, \
+         or hit enter to use the default location({}):",
+        game.get_save_path()
+    ));
 
-        path = src.prompt();
-
-        if Path::new(&path).exists() {
-            src.confirm();
-            match src.prompt().parse() {
-                Ok(1) => {
-                    file = File::create(&Path::new(&path)).unwrap();
-                    break;
-                }
-                _ => {
-                    src.print("Ok let's try again then...");
-                    continue;
-                }
-            };
-        } else {
-            file = File::create(&Path::new(&path)).unwrap();
-            break;
-        }
+    let mut path = src.prompt();
+    if path == "" {
+        path = String::from(game.get_save_path());
     }
-    return file;
+    game.set_save_path(path.clone());
+
+    if !Path::new(&path).exists()
+        || src.confirm("Do you want to save over this file?")
+    {
+        return write_protobuf(&path, game);
+    }
+    src.print("File not saved.");
+    return Ok(());
 }

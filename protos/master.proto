@@ -45,7 +45,8 @@ message Game {
 
   // State variables.
   optional string name = 1;
-  repeated Level levels = 2;   // Game levels.
-  repeated Item inventory = 3; // What you got.
-  repeated Stat stats = 4;
+  optional string save_path = 2;
+  repeated Level levels = 3;   // Game levels.
+  repeated Item inventory = 4; // What you got.
+  repeated Stat stats = 5;
 }
