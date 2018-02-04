@@ -17,10 +17,12 @@ use maeve::screen::Screen;
 
 fn prompt<I: Interfaceable>(src: &mut I) -> Result<Game, String> {
     loop {
-        src.print("Please select an option:");
-        src.print("1 - New Game");
-        src.print("2 - Load Game");
-        src.print("3 - Exit Game");
+        src.print(
+            "Please select an option:\
+             \n\t1 - New Game\
+             \n\t2 - Load Game\
+             \n\t3 - Exit Game",
+        );
 
         match src.prompt().parse() {
             Ok(1) => return prompt_path(src, new),
@@ -50,8 +52,10 @@ fn main() {
     match result {
         Ok(game) => {
             src.print("And the games begin!");
-            // Do something with the games here.
-            evaluate(&mut src, game);
+            match evaluate(&mut src, &mut game.clone()) {
+                Ok(()) => src.print("Goodbye!"),
+                Err(error) => src.print(&format!("Runtime error: {}", &error)),
+            }
         }
         Err(error) => src.print(&format!("Exit: {}", &error)),
     }
