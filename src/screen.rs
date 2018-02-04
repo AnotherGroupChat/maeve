@@ -15,7 +15,18 @@ pub trait Interfaceable {
     fn new() -> Self;
     fn print(&self, &str);
     fn prompt(&mut self) -> String;
-    fn confirm(&self);
+    fn confirm(&mut self, string: &str) -> bool {
+        self.print(string);
+        loop {
+            self.print("1 - Yes");
+            self.print("2 - No");
+            match self.prompt().parse() {
+                Ok(1) => return true,
+                Ok(2) => return false,
+                _ => self.print("Invalid option."),
+            }
+        }
+    }
 }
 
 #[cfg(feature = "pretty")]
@@ -54,12 +65,6 @@ impl Interfaceable for PrettyPrompt {
             Err(_) => String::from("quit"),
         };
     }
-
-    fn confirm(&self) {
-        println!("This file already exists, would you like to overwrite it?");
-        println!("1 - Yes");
-        println!("2 - No");
-    }
 }
 
 #[cfg(not(feature = "pretty"))]
@@ -81,12 +86,6 @@ impl Interfaceable for BasicPrompt {
             .read_line(&mut choice)
             .expect("Failed to read input.");
         return String::from(choice.trim());
-    }
-
-    fn confirm(&self) {
-        println!("This file already exists, would you like to overwrite it?");
-        println!("1 - Yes");
-        println!("2 - No");
     }
 }
 
