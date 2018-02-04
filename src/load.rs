@@ -47,6 +47,7 @@ pub fn save<I: Interfaceable>(
     if !Path::new(&path).exists()
         || src.confirm("Do you want to save over this file?")
     {
+        src.print("Saving...");
         return write_protobuf(&path, game);
     }
     src.print("File not saved.");

@@ -2,9 +2,8 @@
 
 use std::str;
 
-// Type alias defined for an existing type.
-type TokenIterator<'a> = str::SplitWhitespace<'a>;
-
-pub fn tokenize(text: &str) -> TokenIterator {
-    return text.split_whitespace();
+pub fn tokenize(text: &str) -> Vec<String> {
+    return text.split_whitespace()
+        .filter_map(|word| Some(String::from(word)))
+        .collect();
 }

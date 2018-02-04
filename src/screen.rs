@@ -16,10 +16,13 @@ pub trait Interfaceable {
     fn print(&self, &str);
     fn prompt(&mut self) -> String;
     fn confirm(&mut self, string: &str) -> bool {
-        self.print(string);
+        self.print(&format!(
+            "{}:\
+             \n\t1 - Yes\
+             \n\t2 - No",
+            string
+        ));
         loop {
-            self.print("1 - Yes");
-            self.print("2 - No");
             match self.prompt().parse() {
                 Ok(1) => return true,
                 Ok(2) => return false,
