@@ -62,7 +62,7 @@ impl Interfaceable for PrettyPrompt {
     }
 
     fn prompt(&mut self) -> String {
-        let readline = match self.editor.readline(">> "){
+        let readline = match self.editor.readline(">> ") {
             Ok(line) => {
                 if self.history {
                     self.editor.add_history_entry(&line);
