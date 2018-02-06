@@ -7,7 +7,9 @@
 extern crate rustyline;
 #[cfg(feature = "pretty")]
 use self::rustyline::Editor;
+#[cfg(feature = "pretty")]
 use std::fs::File;
+#[cfg(feature = "pretty")]
 use std::path::Path;
 
 #[cfg(not(feature = "pretty"))]
@@ -34,26 +36,28 @@ pub trait Interfaceable {
     }
 }
 
+
 #[cfg(feature = "pretty")]
 pub struct PrettyPrompt {
     editor: Editor<()>,
     history: bool,
 }
 
+
 #[cfg(feature = "pretty")]
 impl Interfaceable for PrettyPrompt {
     fn new() -> PrettyPrompt {
-        let mut rl = Editor::<()>::new();
-        if !Path::new(".history.txt").exists() {
-            File::create(Path::new(".history.txt"));
-        }
-        let history = match rl.load_history(".history.txt") {
-            Err(_) => false,
-            _ => true,
+        let mut editor = Editor::<()>::new();
+        let mut history = false;
+        if confirm_history() {
+            history = match editor.load_history(".history.txt") {
+                Err(_) => false,
+                _ => true,
+            };
         };
         return PrettyPrompt {
-            editor: rl,
-            history: history,
+            editor,
+            history,
         };
     }
 
@@ -71,9 +75,15 @@ impl Interfaceable for PrettyPrompt {
             }
             Err(_) => String::from("quit"),
         };
-        self.editor.save_history(".history.txt").unwrap();
+        if confirm_history() {
+            match self.editor.save_history(".history.txt") {
+                Ok(_) => (),
+                Err(_) => return String::from("Error writing .history.txt."),
+            };
+        }
         return readline;
     }
+
 }
 
 #[cfg(not(feature = "pretty"))]
@@ -103,3 +113,16 @@ pub type Screen = BasicPrompt;
 
 #[cfg(feature = "pretty")]
 pub type Screen = PrettyPrompt;
+
+#[cfg(feature = "pretty")]
+fn confirm_history() -> bool {
+    if !Path::new(".history.txt").exists() {
+        match File::create(Path::new(".history.txt")) {
+           Ok(_) => return true,
+           Err(err) => {
+               println!("Error: {:?}", err);
+            },
+        };
+    }
+    return false;
+}
