@@ -36,13 +36,11 @@ pub trait Interfaceable {
     }
 }
 
-
 #[cfg(feature = "pretty")]
 pub struct PrettyPrompt {
     editor: Editor<()>,
     history: bool,
 }
-
 
 #[cfg(feature = "pretty")]
 impl Interfaceable for PrettyPrompt {
@@ -55,10 +53,7 @@ impl Interfaceable for PrettyPrompt {
                 _ => true,
             };
         };
-        return PrettyPrompt {
-            editor,
-            history,
-        };
+        return PrettyPrompt { editor, history };
     }
 
     fn print(&self, string: &str) {
@@ -66,7 +61,7 @@ impl Interfaceable for PrettyPrompt {
     }
 
     fn prompt(&mut self) -> String {
-        let readline = match self.editor.readline(">> ") {
+        let readline = match self.editor.readline(">> "){
             Ok(line) => {
                 if self.history {
                     self.editor.add_history_entry(&line);
@@ -83,7 +78,6 @@ impl Interfaceable for PrettyPrompt {
         }
         return readline;
     }
-
 }
 
 #[cfg(not(feature = "pretty"))]
@@ -118,10 +112,10 @@ pub type Screen = PrettyPrompt;
 fn confirm_history() -> bool {
     if !Path::new(".history.txt").exists() {
         match File::create(Path::new(".history.txt")) {
-           Ok(_) => return true,
-           Err(err) => {
-               println!("Error: {:?}", err);
-            },
+            Ok(_) => return true,
+            Err(err) => {
+                println!("Error: {:?}", err);
+            }
         };
     }
     return false;
