@@ -7,6 +7,8 @@
 extern crate rustyline;
 #[cfg(feature = "pretty")]
 use self::rustyline::Editor;
+use std::fs::File;
+use std::path::Path;
 
 #[cfg(not(feature = "pretty"))]
 use std;
@@ -42,6 +44,9 @@ pub struct PrettyPrompt {
 impl Interfaceable for PrettyPrompt {
     fn new() -> PrettyPrompt {
         let mut rl = Editor::<()>::new();
+        if !Path::new(".history.txt").exists() {
+            File::create(Path::new(".history.txt"));
+        }
         let history = match rl.load_history(".history.txt") {
             Err(_) => false,
             _ => true,
@@ -57,8 +62,7 @@ impl Interfaceable for PrettyPrompt {
     }
 
     fn prompt(&mut self) -> String {
-        let readline = self.editor.readline(">> ");
-        return match readline {
+        let readline = match self.editor.readline(">> "){
             Ok(line) => {
                 if self.history {
                     self.editor.add_history_entry(&line);
@@ -67,6 +71,8 @@ impl Interfaceable for PrettyPrompt {
             }
             Err(_) => String::from("quit"),
         };
+        self.editor.save_history(".history.txt").unwrap();
+        return readline;
     }
 }
 
