@@ -46,11 +46,12 @@ pub struct PrettyPrompt {
 impl PrettyPrompt {
     fn confirm_history() -> Result<(), String> {
         match OpenOptions::new()
-              .write(true)
-              .create(true)
-              .open(Path::new(".history.txt")) {
-                  Ok(_) => Ok(()),
-                  _ => Err(String::from("Error confirming PrettyPrompt history")),
+            .write(true)
+            .create(true)
+            .open(Path::new(".history.txt"))
+        {
+            Ok(_) => Ok(()),
+            _ => Err(String::from("Error confirming PrettyPrompt history")),
         }
     }
 }
@@ -59,7 +60,10 @@ impl PrettyPrompt {
 impl Interfaceable for PrettyPrompt {
     fn new() -> PrettyPrompt {
         let mut editor = Editor::<()>::new();
-        let history = match (PrettyPrompt::confirm_history(), editor.load_history(".history.txt")) {
+        let history = match (
+            PrettyPrompt::confirm_history(),
+            editor.load_history(".history.txt")
+        ) {
             (Ok(_), Ok(_)) => true,
             _ => false,
         };
@@ -80,7 +84,10 @@ impl Interfaceable for PrettyPrompt {
             }
             Err(_) => String::from("quit"),
         };
-        match (PrettyPrompt::confirm_history(), self.editor.save_history(".history.txt")) {
+        match (
+            PrettyPrompt::confirm_history(),
+            self.editor.save_history(".history.txt")
+        ) {
             (Ok(_), Ok(_)) => (),
             _ => return Err(String::from("Error writing .history.txt.")),
         }
@@ -115,4 +122,3 @@ pub type Screen = BasicPrompt;
 
 #[cfg(feature = "pretty")]
 pub type Screen = PrettyPrompt;
-
