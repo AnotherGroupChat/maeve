@@ -16,7 +16,7 @@ use std::path::Path;
 use std;
 
 pub trait Interfaceable {
-    fn new() -> Result<Self, String>;
+    fn new() -> Self;
     fn print(&self, &str);
     fn prompt(&mut self) -> Result<String, String>;
     fn confirm(&mut self, string: &str) -> bool {
@@ -27,7 +27,7 @@ pub trait Interfaceable {
             string
         ));
         loop {
-            match self.prompt().parse() {
+            match self.prompt().unwrap().parse() {
                 Ok(1) => return true,
                 Ok(2) => return false,
                 _ => self.print("Invalid option."),
@@ -57,18 +57,15 @@ impl PrettyPrompt {
 
 #[cfg(feature = "pretty")]
 impl Interfaceable for PrettyPrompt {
-    fn new() -> Result<PrettyPrompt, String> {
+    fn new() -> PrettyPrompt {
         let mut editor = Editor::<()>::new();
         let mut history = false;
-        match PrettyPrompt::confirm_history() {
-            Ok(_) => {
-                if let true = editor.load_history(".history.txt") {
-                    history = true;
+        if let Ok(_) = PrettyPrompt::confirm_history() {
+                if let Ok(_) = editor.load_history(".history.txt") {
+                    history = true
                 }
-            },
-            Err(err) => return Err(err),
         };
-        return Ok(PrettyPrompt { editor, history });
+        return PrettyPrompt { editor, history };
     }
 
     fn print(&self, string: &str) {
@@ -89,7 +86,7 @@ impl Interfaceable for PrettyPrompt {
             Ok(_) => {
                 match self.editor.save_history(".history.txt") {
                     Ok(_) => (),
-                    Err(_) => return String::from("Error writing .history.txt."),
+                    Err(_) => return Err(String::from("Error writing .history.txt.")),
                 };
             },
             Err(err) => return Err(err),
@@ -103,8 +100,8 @@ pub struct BasicPrompt {}
 
 #[cfg(not(feature = "pretty"))]
 impl Interfaceable for BasicPrompt {
-    fn new() -> Result<BasicPrompt, String> {
-        return Ok(BasicPrompt {});
+    fn new() -> BasicPrompt {
+        return BasicPrompt {};
     }
 
     fn print(&self, string: &str) {
@@ -113,8 +110,8 @@ impl Interfaceable for BasicPrompt {
 
     fn prompt(&mut self) -> Result<String, String> {
         let mut choice = String::new();
-        if let Err(err) = std::io::stdin().read_line(&mut choice) {
-            return Err(err);
+        if let Err(_) = std::io::stdin().read_line(&mut choice) {
+            return Err(String::from("BasicPrompt readline error"));
         };
         return Ok(String::from(choice.trim()));
     }

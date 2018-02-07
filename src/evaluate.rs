@@ -10,7 +10,7 @@ pub fn evaluate<I: Interfaceable>(
     game: &mut Game,
 ) -> Result<(), String> {
     loop {
-        let token_string = src.prompt();
+        let token_string = src.prompt().unwrap();
         let tokens = tokenize(&token_string);
         if tokens.len() == 1 {
             match &tokens.first().unwrap_or(&String::from(""))[..] {

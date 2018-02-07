@@ -24,7 +24,7 @@ fn prompt<I: Interfaceable>(src: &mut I) -> Result<Game, String> {
              \n\t3 - Exit Game",
         );
 
-        match src.prompt().parse() {
+        match src.prompt().unwrap().parse() {
             Ok(1) => return prompt_path(src, new),
             Ok(2) => return prompt_path(src, load),
             Ok(3) => {

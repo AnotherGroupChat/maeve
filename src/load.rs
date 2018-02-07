@@ -22,7 +22,7 @@ pub fn new<I: Interfaceable>(
     src.print("Welcome to Maeve, the hosts are here to serve you.");
     src.print("What is your name?");
 
-    let name = src.prompt();
+    let name = src.prompt().unwrap();
     game.set_name(name.clone());
     maybe_bail!(save(src, &mut game));
     return Ok(game);
@@ -38,7 +38,7 @@ pub fn save<I: Interfaceable>(
         game.get_save_path()
     ));
 
-    let mut path = src.prompt();
+    let mut path = src.prompt().unwrap();
     if path == "" {
         path = String::from(game.get_save_path());
     }

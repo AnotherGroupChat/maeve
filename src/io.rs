@@ -44,7 +44,7 @@ where
     F: Fn(&mut I, M) -> Result<M, String>,
 {
     src.print("Please provide the name of save file you'd like to load:");
-    let choice = src.prompt();
+    let choice = src.prompt().unwrap();
 
     return extract_protobuf(src, &choice, callback);
 }
