@@ -7,6 +7,10 @@
 extern crate rustyline;
 #[cfg(feature = "pretty")]
 use self::rustyline::Editor;
+#[cfg(feature = "pretty")]
+use std::fs::File;
+#[cfg(feature = "pretty")]
+use std::path::Path;
 
 #[cfg(not(feature = "pretty"))]
 use std;
@@ -41,15 +45,15 @@ pub struct PrettyPrompt {
 #[cfg(feature = "pretty")]
 impl Interfaceable for PrettyPrompt {
     fn new() -> PrettyPrompt {
-        let mut rl = Editor::<()>::new();
-        let history = match rl.load_history(".history.txt") {
-            Err(_) => false,
-            _ => true,
+        let mut editor = Editor::<()>::new();
+        let mut history = false;
+        if confirm_history() {
+            history = match editor.load_history(".history.txt") {
+                Err(_) => false,
+                _ => true,
+            };
         };
-        return PrettyPrompt {
-            editor: rl,
-            history: history,
-        };
+        return PrettyPrompt { editor, history };
     }
 
     fn print(&self, string: &str) {
@@ -57,8 +61,7 @@ impl Interfaceable for PrettyPrompt {
     }
 
     fn prompt(&mut self) -> String {
-        let readline = self.editor.readline(">> ");
-        return match readline {
+        let readline = match self.editor.readline(">> ") {
             Ok(line) => {
                 if self.history {
                     self.editor.add_history_entry(&line);
@@ -67,6 +70,13 @@ impl Interfaceable for PrettyPrompt {
             }
             Err(_) => String::from("quit"),
         };
+        if confirm_history() {
+            match self.editor.save_history(".history.txt") {
+                Ok(_) => (),
+                Err(_) => return String::from("Error writing .history.txt."),
+            };
+        }
+        return readline;
     }
 }
 
@@ -97,3 +107,16 @@ pub type Screen = BasicPrompt;
 
 #[cfg(feature = "pretty")]
 pub type Screen = PrettyPrompt;
+
+#[cfg(feature = "pretty")]
+fn confirm_history() -> bool {
+    if !Path::new(".history.txt").exists() {
+        match File::create(Path::new(".history.txt")) {
+            Ok(_) => return true,
+            Err(err) => {
+                println!("Error: {:?}", err);
+            }
+        };
+    }
+    return false;
+}
