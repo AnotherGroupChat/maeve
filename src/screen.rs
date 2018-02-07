@@ -16,9 +16,9 @@ use std::path::Path;
 use std;
 
 pub trait Interfaceable {
-    fn new() -> Self;
+    fn new() -> Result<Self, String>;
     fn print(&self, &str);
-    fn prompt(&mut self) -> String;
+    fn prompt(&mut self) -> Result<String, String>;
     fn confirm(&mut self, string: &str) -> bool {
         self.print(&format!(
             "{}:\
@@ -43,40 +43,58 @@ pub struct PrettyPrompt {
 }
 
 #[cfg(feature = "pretty")]
+impl PrettyPrompt {
+    fn confirm_history() -> Result<(), String> {
+        match Path::new(".history.txt").exists() {
+            false => match File::create(Path::new(".history.txt")) {
+                Ok(_) => Ok(()),
+                Err(_) => Err(String::from("Error confirming PrettyPrompt history")),
+            },
+            true => Ok(()),
+        }
+    }
+}
+
+#[cfg(feature = "pretty")]
 impl Interfaceable for PrettyPrompt {
-    fn new() -> PrettyPrompt {
+    fn new() -> Result<PrettyPrompt, String> {
         let mut editor = Editor::<()>::new();
         let mut history = false;
-        if confirm_history() {
-            history = match editor.load_history(".history.txt") {
-                Err(_) => false,
-                _ => true,
-            };
+        match PrettyPrompt::confirm_history() {
+            Ok(_) => {
+                if let true = editor.load_history(".history.txt") {
+                    history = true;
+                }
+            },
+            Err(err) => return Err(err),
         };
-        return PrettyPrompt { editor, history };
+        return Ok(PrettyPrompt { editor, history });
     }
 
     fn print(&self, string: &str) {
         println!("{}", string);
     }
 
-    fn prompt(&mut self) -> String {
+    fn prompt(&mut self) -> Result<String, String> {
         let readline = match self.editor.readline(">> ") {
             Ok(line) => {
                 if self.history {
                     self.editor.add_history_entry(&line);
                 }
-                return line;
+                line
             }
             Err(_) => String::from("quit"),
         };
-        if confirm_history() {
-            match self.editor.save_history(".history.txt") {
-                Ok(_) => (),
-                Err(_) => return String::from("Error writing .history.txt."),
-            };
+        match PrettyPrompt::confirm_history() {
+            Ok(_) => {
+                match self.editor.save_history(".history.txt") {
+                    Ok(_) => (),
+                    Err(_) => return String::from("Error writing .history.txt."),
+                };
+            },
+            Err(err) => return Err(err),
         }
-        return readline;
+        return Ok(readline);
     }
 }
 
@@ -85,20 +103,20 @@ pub struct BasicPrompt {}
 
 #[cfg(not(feature = "pretty"))]
 impl Interfaceable for BasicPrompt {
-    fn new() -> BasicPrompt {
-        return BasicPrompt {};
+    fn new() -> Result<BasicPrompt, String> {
+        return Ok(BasicPrompt {});
     }
 
     fn print(&self, string: &str) {
         println!("{}", &string);
     }
 
-    fn prompt(&mut self) -> String {
+    fn prompt(&mut self) -> Result<String, String> {
         let mut choice = String::new();
-        std::io::stdin()
-            .read_line(&mut choice)
-            .expect("Failed to read input.");
-        return String::from(choice.trim());
+        if let Err(err) = std::io::stdin().read_line(&mut choice) {
+            return Err(err);
+        };
+        return Ok(String::from(choice.trim()));
     }
 }
 
@@ -108,15 +126,3 @@ pub type Screen = BasicPrompt;
 #[cfg(feature = "pretty")]
 pub type Screen = PrettyPrompt;
 
-#[cfg(feature = "pretty")]
-fn confirm_history() -> bool {
-    if !Path::new(".history.txt").exists() {
-        match File::create(Path::new(".history.txt")) {
-            Ok(_) => return true,
-            Err(err) => {
-                println!("Error: {:?}", err);
-            }
-        };
-    }
-    return false;
-}
