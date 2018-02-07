@@ -47,11 +47,14 @@ impl Interfaceable for PrettyPrompt {
     fn new() -> PrettyPrompt {
         let mut editor = Editor::<()>::new();
         let mut history = false;
-        if confirm_history() {
-            history = match editor.load_history(".history.txt") {
-                Err(_) => false,
-                _ => true,
-            };
+        match confirm_file!(".history.txt") {
+            Ok(_) => {
+                history = match editor.load_history(".history.txt") {
+                    Err(_) => false,
+                    _ => true,
+                };
+            },
+            Err(err) => println!("Error creating/opening .history.txt: {:?}", err),
         };
         return PrettyPrompt { editor, history };
     }
@@ -70,11 +73,14 @@ impl Interfaceable for PrettyPrompt {
             }
             Err(_) => String::from("quit"),
         };
-        if confirm_history() {
-            match self.editor.save_history(".history.txt") {
-                Ok(_) => (),
-                Err(_) => return String::from("Error writing .history.txt."),
-            };
+        match confirm_file!(".history.txt") {
+            Ok(_) => {
+                match self.editor.save_history(".history.txt") {
+                    Ok(_) => (),
+                    Err(_) => return String::from("Error writing .history.txt."),
+                };
+            },
+            Err(err) => println!("Error creating/opening .history.txt: {:?}", err),
         }
         return readline;
     }
@@ -107,16 +113,3 @@ pub type Screen = BasicPrompt;
 
 #[cfg(feature = "pretty")]
 pub type Screen = PrettyPrompt;
-
-#[cfg(feature = "pretty")]
-fn confirm_history() -> bool {
-    if !Path::new(".history.txt").exists() {
-        match File::create(Path::new(".history.txt")) {
-            Ok(_) => return true,
-            Err(err) => {
-                println!("Error: {:?}", err);
-            }
-        };
-    }
-    return false;
-}

@@ -10,6 +10,7 @@ tmp*
 *.pb
 src/protos/master.rs
 target/
+.history.txt
 Cargo.lock
 .idea
 *.iml
