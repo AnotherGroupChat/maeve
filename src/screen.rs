@@ -62,7 +62,7 @@ impl Interfaceable for PrettyPrompt {
         let mut editor = Editor::<()>::new();
         let history = match (
             PrettyPrompt::confirm_history(),
-            editor.load_history(".history.txt")
+            editor.load_history(".history.txt"),
         ) {
             (Ok(_), Ok(_)) => true,
             _ => false,
@@ -86,7 +86,7 @@ impl Interfaceable for PrettyPrompt {
         };
         match (
             PrettyPrompt::confirm_history(),
-            self.editor.save_history(".history.txt")
+            self.editor.save_history(".history.txt"),
         ) {
             (Ok(_), Ok(_)) => (),
             _ => return Err(String::from("Error writing .history.txt.")),
