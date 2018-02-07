@@ -8,7 +8,7 @@ extern crate rustyline;
 #[cfg(feature = "pretty")]
 use self::rustyline::Editor;
 #[cfg(feature = "pretty")]
-use std::fs::File;
+use std::fs::OpenOptions;
 #[cfg(feature = "pretty")]
 use std::path::Path;
 
@@ -45,12 +45,12 @@ pub struct PrettyPrompt {
 #[cfg(feature = "pretty")]
 impl PrettyPrompt {
     fn confirm_history() -> Result<(), String> {
-        match Path::new(".history.txt").exists() {
-            false => match File::create(Path::new(".history.txt")) {
-                Ok(_) => Ok(()),
-                Err(_) => Err(String::from("Error confirming PrettyPrompt history")),
-            },
-            true => Ok(()),
+        match OpenOptions::new()
+              .write(true)
+              .create(true)
+              .open(Path::new(".history.txt")) {
+                  Ok(_) => Ok(()),
+                  _ => Err(String::from("Error confirming PrettyPrompt history")),
         }
     }
 }
@@ -80,14 +80,9 @@ impl Interfaceable for PrettyPrompt {
             }
             Err(_) => String::from("quit"),
         };
-        match PrettyPrompt::confirm_history() {
-            Ok(_) => {
-                match self.editor.save_history(".history.txt") {
-                    Ok(_) => (),
-                    Err(_) => return Err(String::from("Error writing .history.txt.")),
-                };
-            },
-            Err(err) => return Err(err),
+        match (PrettyPrompt::confirm_history(), self.editor.save_history(".history.txt")) {
+            (Ok(_), Ok(_)) => (),
+            _ => return Err(String::from("Error writing .history.txt.")),
         }
         return Ok(readline);
     }
