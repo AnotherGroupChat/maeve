@@ -59,11 +59,9 @@ impl PrettyPrompt {
 impl Interfaceable for PrettyPrompt {
     fn new() -> PrettyPrompt {
         let mut editor = Editor::<()>::new();
-        let mut history = false;
-        if let Ok(_) = PrettyPrompt::confirm_history() {
-                if let Ok(_) = editor.load_history(".history.txt") {
-                    history = true
-                }
+        let history = match (PrettyPrompt::confirm_history(), editor.load_history(".history.txt")) {
+            (Ok(_), Ok(_)) => true,
+            _ => false,
         };
         return PrettyPrompt { editor, history };
     }
