@@ -9,6 +9,7 @@ categories = ["command-line-interface"]
 description = """
 null
 """
+build = "build.rs"
 
 [lib]
 name = "maeve"
@@ -26,6 +27,9 @@ rustyline = {version = "1.0.0", optional = true}
 version = "2.29"
 default-features = false
 features = ["suggestions", "color", "yaml"]
+
+[build-dependencies]
+glob = "0.2"
 
 [features]
 default = []
