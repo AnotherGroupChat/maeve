@@ -16,3 +16,19 @@ impl fmt::Display for MaeveError {
         }
     }
 }
+
+impl error::Error for MaeveError {
+    fn description(&self) -> &str {
+        match *self {
+            MaeveError::Io(ref err) => err.description(),
+            MaeveError::Parse(ref err) => err.description(),
+        }
+    }
+
+    fn cause(&self) -> Option<&error::Error> {
+        match *self {
+            MaeveError::Io(ref err) => Some(err),
+            MaeveError::Parse(ref err) => Some(err),
+        }
+    }
+}
