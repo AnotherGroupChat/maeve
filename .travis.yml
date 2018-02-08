@@ -19,7 +19,6 @@ before_script:
   - cargo install rustfmt || true
 
 script:
-  - ./build.sh
-  - cargo +nightly fmt -- --write-mode=diff
   - cargo build
+  - cargo +nightly fmt -- --write-mode=diff
   - cargo test
