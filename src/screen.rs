@@ -21,7 +21,7 @@ pub trait Interfaceable {
     fn new() -> Self;
     fn print(&self, &str);
     fn prompt(&mut self) -> Result<String, MaeveError>;
-    fn confirm(&mut self, string: &str) -> bool {
+    fn confirm(&mut self, string: &str) -> Result<bool, MaeveError> {
         self.print(&format!(
             "{}:\
              \n\t1 - Yes\
@@ -29,9 +29,9 @@ pub trait Interfaceable {
             string
         ));
         loop {
-            match self.prompt().unwrap().parse() {
-                Ok(1) => return true,
-                Ok(2) => return false,
+            match self.prompt()?.parse() {
+                Ok(1) => return Ok(true),
+                Ok(2) => return Ok(false),
                 _ => self.print("Invalid option."),
             }
         }

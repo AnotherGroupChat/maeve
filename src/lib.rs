@@ -2,10 +2,10 @@
 
 extern crate protobuf;
 
+pub mod error;
 pub mod evaluate;
 pub mod interpreter;
 pub mod io;
 pub mod load;
 pub mod protos;
 pub mod screen;
-pub mod error;

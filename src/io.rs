@@ -25,7 +25,10 @@ where
     };
 }
 
-pub fn write_protobuf<M: Message>(path: &str, msg: &M) -> Result<(), MaeveError> {
+pub fn write_protobuf<M: Message>(
+    path: &str,
+    msg: &M,
+) -> Result<(), MaeveError> {
     let mut file = File::create(&Path::new(&path))?;
     let mut cos = CodedOutputStream::new(&mut file);
     msg.write_to(&mut cos)?;

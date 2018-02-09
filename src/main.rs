@@ -25,7 +25,7 @@ fn menu<I: Interfaceable>(src: &mut I) -> Result<Game, MaeveError> {
              \n\t3 - Exit Game",
         );
 
-        match src.prompt().unwrap().parse() {
+        match src.prompt()?.parse() {
             Ok(1) => return prompt_path(src, new),
             Ok(2) => return prompt_path(src, load),
             Ok(3) => return Err(MaeveError::Exit),

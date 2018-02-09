@@ -34,8 +34,12 @@ impl fmt::Display for MaeveError {
             MaeveError::Load(ref err) => write!(f, "Load Error: {}", err),
             MaeveError::Proto(ref err) => write!(f, "Proto Error: {}", err),
             MaeveError::Parse => write!(f, "Error parsing input."),
-            MaeveError::Exit => write!(f, "We look forward to seeing you again."),
-            MaeveError::WriteHistory => write!(f, "Error with .history.txt file"),
+            MaeveError::Exit => {
+                write!(f, "We look forward to seeing you again.")
+            }
+            MaeveError::WriteHistory => {
+                write!(f, "Error with .history.txt file")
+            }
         }
     }
 }

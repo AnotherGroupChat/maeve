@@ -46,7 +46,7 @@ pub fn save<I: Interfaceable>(
     game.set_save_path(path.clone());
 
     if !Path::new(&path).exists()
-        || src.confirm("Do you want to save over this file?")
+        || src.confirm("Do you want to save over this file?")?
     {
         src.print("Saving...");
         return write_protobuf(&path, game);
