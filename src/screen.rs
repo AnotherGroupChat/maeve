@@ -5,6 +5,8 @@
 
 #[cfg(feature = "pretty")]
 extern crate rustyline;
+
+use error::MaeveError;
 #[cfg(feature = "pretty")]
 use self::rustyline::Editor;
 #[cfg(feature = "pretty")]
@@ -18,7 +20,7 @@ use std;
 pub trait Interfaceable {
     fn new() -> Self;
     fn print(&self, &str);
-    fn prompt(&mut self) -> Result<String, String>;
+    fn prompt(&mut self) -> Result<String, MaeveError>;
     fn confirm(&mut self, string: &str) -> bool {
         self.print(&format!(
             "{}:\
@@ -44,14 +46,14 @@ pub struct PrettyPrompt {
 
 #[cfg(feature = "pretty")]
 impl PrettyPrompt {
-    fn confirm_history() -> Result<(), String> {
+    fn confirm_history() -> Result<(), MaeveError> {
         match OpenOptions::new()
             .write(true)
             .create(true)
             .open(Path::new(".history.txt"))
         {
             Ok(_) => Ok(()),
-            _ => Err(String::from("Error confirming PrettyPrompt history")),
+            Err(err) => Err(MaeveError::Write(err)),
         }
     }
 }
@@ -74,7 +76,7 @@ impl Interfaceable for PrettyPrompt {
         println!("{}", string);
     }
 
-    fn prompt(&mut self) -> Result<String, String> {
+    fn prompt(&mut self) -> Result<String, MaeveError> {
         let readline = match self.editor.readline(">> ") {
             Ok(line) => {
                 if self.history {
@@ -89,7 +91,7 @@ impl Interfaceable for PrettyPrompt {
             self.editor.save_history(".history.txt"),
         ) {
             (Ok(_), Ok(_)) => (),
-            _ => return Err(String::from("Error writing .history.txt.")),
+            _ => return Err(MaeveError::WriteHistory),
         }
         return Ok(readline);
     }
@@ -108,10 +110,10 @@ impl Interfaceable for BasicPrompt {
         println!("{}", &string);
     }
 
-    fn prompt(&mut self) -> Result<String, String> {
+    fn prompt(&mut self) -> Result<String, MaeveError> {
         let mut choice = String::new();
-        if let Err(_) = std::io::stdin().read_line(&mut choice) {
-            return Err(String::from("BasicPrompt readline error"));
+        if let Err(err) = std::io::stdin().read_line(&mut choice) {
+            return Err(MaeveError::Io(err));
         };
         return Ok(String::from(choice.trim()));
     }
