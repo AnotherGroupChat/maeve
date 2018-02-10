@@ -46,7 +46,7 @@ fn generate_pb(path: std::path::PathBuf) {
         .expect("Failed to compile pb file.");
 
     /* Assign _ because it must be used */
-    let _ = protos_cmd
+    protos_cmd
         .stdin
         .as_mut()
         .expect("Error borrowing mutably in build.rs")
