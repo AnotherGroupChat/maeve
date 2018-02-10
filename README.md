@@ -36,7 +36,6 @@ $ PATH="$HOME/.cargo/bin:$PATH"
 
 and then compile with
 ```
-$ ./build.sh
 $ cargo build
 ```
 
