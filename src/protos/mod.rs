@@ -1,2 +1,2 @@
-extern crate protobuf;
+extern crate prost;
 pub mod master;

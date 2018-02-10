@@ -1,6 +1,6 @@
 //! A library file to bundle all potentially external facing utilities.
 
-extern crate protobuf;
+extern crate prost;
 
 pub mod error;
 pub mod evaluate;
