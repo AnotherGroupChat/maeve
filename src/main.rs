@@ -6,6 +6,7 @@ extern crate maeve;
 extern crate protobuf;
 
 use clap::App;
+use maeve::error::MaeveError;
 use maeve::evaluate::evaluate;
 use maeve::io::extract_protobuf;
 use maeve::io::prompt_path;
@@ -15,7 +16,7 @@ use maeve::protos::master::Game;
 use maeve::screen::Interfaceable;
 use maeve::screen::Screen;
 
-fn prompt<I: Interfaceable>(src: &mut I) -> Result<Game, String> {
+fn menu<I: Interfaceable>(src: &mut I) -> Result<Game, MaeveError> {
     loop {
         src.print(
             "Please select an option:\
@@ -24,12 +25,10 @@ fn prompt<I: Interfaceable>(src: &mut I) -> Result<Game, String> {
              \n\t3 - Exit Game",
         );
 
-        match src.prompt().parse() {
+        match src.prompt()?.parse() {
             Ok(1) => return prompt_path(src, new),
             Ok(2) => return prompt_path(src, load),
-            Ok(3) => {
-                return Err(String::from("We look forward to your next visit."))
-            }
+            Ok(3) => return Err(MaeveError::Exit),
             _ => println!("That is not how this works, choose again."),
         }
     }
@@ -46,7 +45,7 @@ fn main() {
     let result = match (load_game, new_game) {
         (Some(path), _) => extract_protobuf(&mut src, path, load),
         (_, Some(path)) => extract_protobuf(&mut src, path, new),
-        (_, _) => prompt(&mut src),
+        (_, _) => menu(&mut src),
     };
 
     match result {
@@ -54,9 +53,9 @@ fn main() {
             src.print("And the games begin!");
             match evaluate(&mut src, &mut game.clone()) {
                 Ok(()) => src.print("Goodbye!"),
-                Err(error) => src.print(&format!("Runtime error: {}", &error)),
+                Err(err) => src.print(&format!("Runtime error: {}", &err)),
             }
         }
-        Err(error) => src.print(&format!("Exit: {}", &error)),
+        Err(err) => src.print(&format!("Exit: {}", &err)),
     }
 }

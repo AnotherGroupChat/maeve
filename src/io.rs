@@ -1,5 +1,6 @@
 //! Operations that interact with the file system.
 
+use error::MaeveError;
 use protobuf::CodedOutputStream;
 use protobuf::Message;
 use protobuf::core::MessageStatic;
@@ -11,40 +12,39 @@ pub fn extract_protobuf<F, M: MessageStatic, I: Interfaceable>(
     src: &mut I,
     path: &str,
     callback: F,
-) -> Result<M, String>
+) -> Result<M, MaeveError>
 where
-    F: Fn(&mut I, M) -> Result<M, String>,
+    F: Fn(&mut I, M) -> Result<M, MaeveError>,
 {
     return match File::open(&Path::new(path)) {
         Ok(mut is) => match ::protobuf::parse_from_reader::<M>(&mut is) {
             Ok(t) => callback(src, t),
-            Err(_) => Err(String::from("Failed to load file.")),
+            Err(err) => Err(MaeveError::Proto(err)),
         },
-        Err(_) => Err(String::from("Failed to open file")),
+        Err(err) => Err(MaeveError::Load(err)),
     };
 }
 
-pub fn write_protobuf<M: Message>(path: &str, msg: &M) -> Result<(), String> {
-    let mut file =
-        maybe_bail!(File::create(&Path::new(&path)), "Error creating file.");
+pub fn write_protobuf<M: Message>(
+    path: &str,
+    msg: &M,
+) -> Result<(), MaeveError> {
+    let mut file = File::create(&Path::new(&path))?;
     let mut cos = CodedOutputStream::new(&mut file);
-    maybe_bail!(
-        msg.write_to(&mut cos),
-        "Error attempting to write save file."
-    );
-    maybe_bail!(cos.flush(), "Error flushing write buffer.");
+    msg.write_to(&mut cos)?;
+    cos.flush()?;
     return Ok(());
 }
 
 pub fn prompt_path<F, M: MessageStatic, I: Interfaceable>(
     src: &mut I,
     callback: F,
-) -> Result<M, String>
+) -> Result<M, MaeveError>
 where
-    F: Fn(&mut I, M) -> Result<M, String>,
+    F: Fn(&mut I, M) -> Result<M, MaeveError>,
 {
     src.print("Please provide the name of save file you'd like to load:");
-    let choice = src.prompt();
+    let choice = src.prompt()?;
 
     return extract_protobuf(src, &choice, callback);
 }

@@ -5,10 +5,12 @@
 
 #[cfg(feature = "pretty")]
 extern crate rustyline;
+
+use error::MaeveError;
 #[cfg(feature = "pretty")]
 use self::rustyline::Editor;
 #[cfg(feature = "pretty")]
-use std::fs::File;
+use std::fs::OpenOptions;
 #[cfg(feature = "pretty")]
 use std::path::Path;
 
@@ -18,8 +20,8 @@ use std;
 pub trait Interfaceable {
     fn new() -> Self;
     fn print(&self, &str);
-    fn prompt(&mut self) -> String;
-    fn confirm(&mut self, string: &str) -> bool {
+    fn prompt(&mut self) -> Result<String, MaeveError>;
+    fn confirm(&mut self, string: &str) -> Result<bool, MaeveError> {
         self.print(&format!(
             "{}:\
              \n\t1 - Yes\
@@ -27,9 +29,9 @@ pub trait Interfaceable {
             string
         ));
         loop {
-            match self.prompt().parse() {
-                Ok(1) => return true,
-                Ok(2) => return false,
+            match self.prompt()?.parse() {
+                Ok(1) => return Ok(true),
+                Ok(2) => return Ok(false),
                 _ => self.print("Invalid option."),
             }
         }
@@ -43,15 +45,29 @@ pub struct PrettyPrompt {
 }
 
 #[cfg(feature = "pretty")]
+impl PrettyPrompt {
+    fn confirm_history() -> Result<(), MaeveError> {
+        match OpenOptions::new()
+            .write(true)
+            .create(true)
+            .open(Path::new(".history.txt"))
+        {
+            Ok(_) => Ok(()),
+            Err(err) => Err(MaeveError::Write(err)),
+        }
+    }
+}
+
+#[cfg(feature = "pretty")]
 impl Interfaceable for PrettyPrompt {
     fn new() -> PrettyPrompt {
         let mut editor = Editor::<()>::new();
-        let mut history = false;
-        if confirm_history() {
-            history = match editor.load_history(".history.txt") {
-                Err(_) => false,
-                _ => true,
-            };
+        let history = match (
+            PrettyPrompt::confirm_history(),
+            editor.load_history(".history.txt"),
+        ) {
+            (Ok(_), Ok(_)) => true,
+            _ => false,
         };
         return PrettyPrompt { editor, history };
     }
@@ -60,23 +76,24 @@ impl Interfaceable for PrettyPrompt {
         println!("{}", string);
     }
 
-    fn prompt(&mut self) -> String {
+    fn prompt(&mut self) -> Result<String, MaeveError> {
         let readline = match self.editor.readline(">> ") {
             Ok(line) => {
                 if self.history {
                     self.editor.add_history_entry(&line);
                 }
-                return line;
+                line
             }
             Err(_) => String::from("quit"),
         };
-        if confirm_history() {
-            match self.editor.save_history(".history.txt") {
-                Ok(_) => (),
-                Err(_) => return String::from("Error writing .history.txt."),
-            };
+        match (
+            PrettyPrompt::confirm_history(),
+            self.editor.save_history(".history.txt"),
+        ) {
+            (Ok(_), Ok(_)) => (),
+            _ => return Err(MaeveError::WriteHistory),
         }
-        return readline;
+        return Ok(readline);
     }
 }
 
@@ -93,12 +110,12 @@ impl Interfaceable for BasicPrompt {
         println!("{}", &string);
     }
 
-    fn prompt(&mut self) -> String {
+    fn prompt(&mut self) -> Result<String, MaeveError> {
         let mut choice = String::new();
-        std::io::stdin()
-            .read_line(&mut choice)
-            .expect("Failed to read input.");
-        return String::from(choice.trim());
+        if let Err(err) = std::io::stdin().read_line(&mut choice) {
+            return Err(MaeveError::Io(err));
+        };
+        return Ok(String::from(choice.trim()));
     }
 }
 
@@ -107,16 +124,3 @@ pub type Screen = BasicPrompt;
 
 #[cfg(feature = "pretty")]
 pub type Screen = PrettyPrompt;
-
-#[cfg(feature = "pretty")]
-fn confirm_history() -> bool {
-    if !Path::new(".history.txt").exists() {
-        match File::create(Path::new(".history.txt")) {
-            Ok(_) => return true,
-            Err(err) => {
-                println!("Error: {:?}", err);
-            }
-        };
-    }
-    return false;
-}

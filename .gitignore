@@ -9,6 +9,7 @@ tmp*
 *.so
 *.pb
 src/protos/master.rs
+.history.txt
 target/
 Cargo.lock
 .idea
