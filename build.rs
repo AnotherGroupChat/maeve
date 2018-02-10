@@ -45,7 +45,6 @@ fn generate_pb(path: std::path::PathBuf) {
         .spawn()
         .expect("Failed to compile pb file.");
 
-    /* Assign _ because it must be used */
     protos_cmd
         .stdin
         .as_mut()
