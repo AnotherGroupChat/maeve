@@ -21,7 +21,7 @@ where
             Ok(t) => callback(src, t),
             Err(err) => Err(MaeveError::Proto(err)),
         },
-        Err(err) => Err(MaeveError::Load(err)),
+        Err(_) => Err(MaeveError::Load),
     };
 }
 

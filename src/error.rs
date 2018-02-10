@@ -7,10 +7,10 @@ use std::io;
 pub enum MaeveError {
     Exit,
     Io(io::Error),
-    Load(io::Error),
+    Load,
     Parse,
     Proto(protobuf::ProtobufError),
-    Write(io::Error),
+    Write,
     WriteHistory,
 }
 
@@ -29,16 +29,20 @@ impl From<protobuf::ProtobufError> for MaeveError {
 impl fmt::Display for MaeveError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            MaeveError::Io(ref err) => write!(f, "IO Error: {}", err),
-            MaeveError::Write(ref err) => write!(f, "Write Error: {}", err),
-            MaeveError::Load(ref err) => write!(f, "Load Error: {}", err),
-            MaeveError::Proto(ref err) => write!(f, "Proto Error: {}", err),
-            MaeveError::Parse => write!(f, "Error parsing input."),
             MaeveError::Exit => {
-                write!(f, "We look forward to seeing you again.")
+                write!(f, "We look forward to seeing you again!")
+            }
+            MaeveError::Io(ref err) => write!(f, "IO Error: {}", err),
+            MaeveError::Load => {
+                write!(f, "Load Error!")
+            }
+            MaeveError::Parse => write!(f, "Error parsing input!"),
+            MaeveError::Proto(ref err) => write!(f, "Proto Error: {}", err),
+            MaeveError::Write => {
+                write!(f, "Write Error!")
             }
             MaeveError::WriteHistory => {
-                write!(f, "Error with .history.txt file")
+                write!(f, "Error writing .history.txt file!")
             }
         }
     }
@@ -47,24 +51,24 @@ impl fmt::Display for MaeveError {
 impl error::Error for MaeveError {
     fn description(&self) -> &str {
         match *self {
-            MaeveError::Io(ref err) => err.description(),
-            MaeveError::Write(ref err) => err.description(),
-            MaeveError::Load(ref err) => err.description(),
-            MaeveError::Proto(ref err) => err.description(),
-            MaeveError::Parse => "Bad input",
             MaeveError::Exit => "Exiting",
-            MaeveError::WriteHistory => "File error: .history.txt",
+            MaeveError::Io(ref err) => err.description(),
+            MaeveError::Load => "Error loading file",
+            MaeveError::Parse => "Bad input",
+            MaeveError::Proto(ref err) => err.description(),
+            MaeveError::Write => "Failed write",
+            MaeveError::WriteHistory => "Failed write to .history.txt",
         }
     }
 
     fn cause(&self) -> Option<&error::Error> {
         match *self {
-            MaeveError::Io(ref err) => Some(err),
-            MaeveError::Write(ref err) => Some(err),
-            MaeveError::Load(ref err) => Some(err),
-            MaeveError::Proto(ref err) => Some(err),
-            MaeveError::Parse => None,
             MaeveError::Exit => None,
+            MaeveError::Io(ref err) => Some(err),
+            MaeveError::Load => None,
+            MaeveError::Parse => None,
+            MaeveError::Proto(ref err) => Some(err),
+            MaeveError::Write => None,
             MaeveError::WriteHistory => None,
         }
     }
