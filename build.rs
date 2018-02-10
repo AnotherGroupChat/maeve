@@ -23,8 +23,13 @@ fn generate_pbs() {
 }
 
 fn generate_pb(path: std::path::PathBuf) {
-    let file_name = &path.file_stem().unwrap().to_str().unwrap();
-    let output_file = File::create(format!("games/{}.pb", &file_name)).unwrap();
+    let file_name = &path.file_stem()
+        .expect("Error parsing file stem in build.rs")
+        .to_str()
+        .expect("Error converting path name to string in build.rs");
+
+    let output_file = File::create(format!("games/{}.pb", &file_name))
+        .expect("Error creating output file in build.rs");
 
     let mut input_file = File::open(&path).expect("Failed to open file");
     let mut contents = String::new();
@@ -44,7 +49,7 @@ fn generate_pb(path: std::path::PathBuf) {
     let _ = protos_cmd
         .stdin
         .as_mut()
-        .unwrap()
+        .expect("Error borrowing mutably in build.rs")
         .write_all(contents.as_bytes())
         .expect("Couldn't write to pb file.");
 }
