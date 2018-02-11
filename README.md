@@ -6,6 +6,17 @@ Maeve is an interpreter for text-based games. The end goal is support for a comm
 
 Go to [the Rust website] and download Rust.
 
+compile with    
+```    
+$ cargo build  
+```    
+   
+Once you've completed the above instructions the game should now be ready to run with: 
+   
+```sh  
+$ cargo run    
+```
+
 In theory, the rust protobuf compiler should be autodownloaded for you and provisioned.
 The current game relies of Protobuf3; exisiting compilers may not support this.
 For reference, please see the [PROST!](https://github.com/danburkert/prost) page for details.
