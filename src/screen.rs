@@ -53,7 +53,7 @@ impl PrettyPrompt {
             .open(Path::new(".history.txt"))
         {
             Ok(_) => Ok(()),
-            Err(err) => Err(MaeveError::Write(err)),
+            Err(_) => Err(MaeveError::Write),
         }
     }
 }
