@@ -6,18 +6,11 @@ readme = "README.md"
 license = "MIT"
 keywords = ["game"]
 categories = ["command-line-interface"]
+build = "build.rs"
 description = """
 null
 """
-build = "build.rs"
 
-[lib]
-name = "maeve"
-path = "src/lib.rs"
-
-[[bin]]
-name = "maeve"
-path = "src/main.rs"
 
 [dependencies]
 bytes = "0.4.6"
@@ -32,6 +25,7 @@ features = ["suggestions", "color", "yaml"]
 
 [build-dependencies]
 glob = "0.2"
+prost-build = "0.3.0"
 
 [features]
 default = []

@@ -12,7 +12,7 @@ pub fn load<I: Interfaceable>(
     mut game: Game,
 ) -> Result<Game, MaeveError> {
     src.print("I see you've been a guest with us before.");
-    src.print(&format!("Welcome back {}.", game.get_name()));
+    src.print(&format!("Welcome back {}.", game.name));
     return Ok(game);
 }
 
@@ -24,7 +24,7 @@ pub fn new<I: Interfaceable>(
     src.print("What is your name?");
 
     let name = src.prompt()?;
-    game.set_name(name.clone());
+    game.name = name.clone();
     save(src, &mut game)?;
     return Ok(game);
 }
@@ -36,14 +36,14 @@ pub fn save<I: Interfaceable>(
     src.print(&format!(
         "Please enter the name of the new save file, \
          or hit enter to use the default location ({}):",
-        game.get_save_path()
+        game.save_path
     ));
 
     let mut path = src.prompt()?;
     if path == "" {
-        path = String::from(game.get_save_path());
+        path = String::from(game.save_path);
     }
-    game.set_save_path(path.clone());
+    game.save_path = path.clone();
 
     if !Path::new(&path).exists()
         || src.confirm("Do you want to save over this file?")?

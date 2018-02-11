@@ -72,16 +72,16 @@ message Game {
       Action action = 2;      // Climbed into the well, flew across the sky.
     }
     string name = 1; // Sweetwater, Ranch, Control Room, Cold Storage
-    LevelId id = 1;
-    string intro = 2;        // e.g "You entered the room!";
-    repeated NPC npcs = 3;   // A troll is in the room.
-    repeated Item items = 4; // Items in the room
-    repeated Entrance entrance = 5;
+    LevelId id = 2;
+    string intro = 3;        // e.g "You entered the room!";
+    repeated NPC npcs = 4;   // A troll is in the room.
+    repeated Item items = 5; // Items in the room
+    repeated Entrance entrance = 6;
   }
 
   // State variables.
   string name = 1;
-  string save_path = 2 [default = "sample.pb"];
+  string save_path = 2;
   repeated Level levels = 3;   // Game levels.
   repeated Item inventory = 4; // What you got.
   repeated Stat stats = 5;

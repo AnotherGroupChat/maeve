@@ -3,6 +3,7 @@
 use error::MaeveError;
 use prost::Message;
 use screen::Interfaceable;
+use std::io::Read;
 use std::fs::File;
 use std::path::Path;
 
@@ -13,14 +14,14 @@ pub fn extract_protobuf<F, M, I>(
 ) -> Result<M, MaeveError>
 where
     F: Fn(&mut I, M) -> Result<M, MaeveError>,
-    M: Message + Default,
-    I: Interfacable,
+    M: Message,
+    I: Interfaceable,
 {
     let mut buf = Vec::new();
     File::open(&Path::new(path))?.read_to_end(&mut buf);
 
     let message = M::decode(&buf)?;
-    return callback(src, t)?;
+    return Ok(callback(src, message)?);
 }
 
 pub fn write_protobuf<M: Message>(
