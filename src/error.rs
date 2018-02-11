@@ -1,9 +1,12 @@
+//! Contains errors relevant to the game. Wraps everything for consistency.
+
+use prost::DecodeError;
+use prost::EncodeError;
 use std::error;
 use std::fmt;
 use std::io;
-use prost::DecodeError;
-use prost::EncodeError;
 
+// Submit PR to Prost for Error container similar to this.
 #[derive(Debug)]
 pub enum ProstError {
     Decode(DecodeError),
