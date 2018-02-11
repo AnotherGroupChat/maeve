@@ -4,6 +4,7 @@ use error::MaeveError;
 use prost::Message;
 use screen::Interfaceable;
 use std::io::Read;
+use std::io::Write;
 use std::fs::File;
 use std::path::Path;
 
@@ -14,17 +15,17 @@ pub fn extract_protobuf<F, M, I>(
 ) -> Result<M, MaeveError>
 where
     F: Fn(&mut I, M) -> Result<M, MaeveError>,
-    M: Message,
+    M: Message + Default,
     I: Interfaceable,
 {
     let mut buf = Vec::new();
-    File::open(&Path::new(path))?.read_to_end(&mut buf);
+    File::open(&Path::new(path))?.read_to_end(&mut buf)?;
 
     let message = M::decode(&buf)?;
     return Ok(callback(src, message)?);
 }
 
-pub fn write_protobuf<M: Message>(
+pub fn write_protobuf<M: Message + Default>(
     path: &str,
     message: &M,
 ) -> Result<(), MaeveError> {
@@ -34,12 +35,11 @@ pub fn write_protobuf<M: Message>(
     return Ok(());
 }
 
-pub fn prompt_path<F, M: Message, I: Interfaceable>(
-    src: &mut I,
-    callback: F,
-) -> Result<M, MaeveError>
+pub fn prompt_path<F, M, I>(src: &mut I, callback: F) -> Result<M, MaeveError>
 where
     F: Fn(&mut I, M) -> Result<M, MaeveError>,
+    M: Message + Default,
+    I: Interfaceable,
 {
     src.print("Please provide the name of save file you'd like to load:");
     let choice = src.prompt()?;

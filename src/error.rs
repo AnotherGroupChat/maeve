@@ -1,15 +1,48 @@
 use std::error;
 use std::fmt;
 use std::io;
+use prost::DecodeError;
+use prost::EncodeError;
+
+#[derive(Debug)]
+pub enum ProstError {
+    Decode(DecodeError),
+    Encode(EncodeError),
+}
+
+impl fmt::Display for ProstError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            ProstError::Encode(ref err) => write!(f, "Encode Error: {}", err),
+            ProstError::Decode(ref err) => write!(f, "Decode Error: {}", err),
+        }
+    }
+}
+
+impl error::Error for ProstError {
+    fn description(&self) -> &str {
+        match *self {
+            ProstError::Encode(ref err) => err.description(),
+            ProstError::Decode(ref err) => err.description(),
+        }
+    }
+
+    fn cause(&self) -> Option<&error::Error> {
+        match *self {
+            ProstError::Encode(ref err) => Some(err),
+            ProstError::Decode(ref err) => Some(err),
+        }
+    }
+}
 
 #[derive(Debug)]
 pub enum MaeveError {
     Exit,
     Io(io::Error),
-    Load(io::Error),
+    Load,
     Parse,
-    Proto,
-    Write(io::Error),
+    Proto(ProstError),
+    Write,
     WriteHistory,
 }
 
@@ -19,19 +52,31 @@ impl From<io::Error> for MaeveError {
     }
 }
 
+impl From<DecodeError> for MaeveError {
+    fn from(err: DecodeError) -> MaeveError {
+        MaeveError::Proto(ProstError::Decode(err))
+    }
+}
+
+impl From<EncodeError> for MaeveError {
+    fn from(err: EncodeError) -> MaeveError {
+        MaeveError::Proto(ProstError::Encode(err))
+    }
+}
+
 impl fmt::Display for MaeveError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            MaeveError::Io(ref err) => write!(f, "IO Error: {}", err),
-            MaeveError::Write(ref err) => write!(f, "Write Error: {}", err),
-            MaeveError::Load(ref err) => write!(f, "Load Error: {}", err),
-            MaeveError::Proto => write!(f, "Proto Error"),
-            MaeveError::Parse => write!(f, "Error parsing input."),
             MaeveError::Exit => {
-                write!(f, "We look forward to seeing you again.")
+                write!(f, "We look forward to seeing you again!")
             }
+            MaeveError::Io(ref err) => write!(f, "IO Error: {}", err),
+            MaeveError::Load => write!(f, "Load Error!"),
+            MaeveError::Parse => write!(f, "Error parsing input!"),
+            MaeveError::Proto(ref err) => write!(f, "Proto Error: {}", err),
+            MaeveError::Write => write!(f, "Write Error!"),
             MaeveError::WriteHistory => {
-                write!(f, "Error with .history.txt file")
+                write!(f, "Error writing .history.txt file!")
             }
         }
     }
@@ -40,24 +85,24 @@ impl fmt::Display for MaeveError {
 impl error::Error for MaeveError {
     fn description(&self) -> &str {
         match *self {
-            MaeveError::Io(ref err) => err.description(),
-            MaeveError::Write(ref err) => err.description(),
-            MaeveError::Load(ref err) => err.description(),
-            MaeveError::Proto => "Bad proto",
-            MaeveError::Parse => "Bad input",
             MaeveError::Exit => "Exiting",
-            MaeveError::WriteHistory => "File error: .history.txt",
+            MaeveError::Io(ref err) => err.description(),
+            MaeveError::Load => "Error loading file",
+            MaeveError::Parse => "Bad input",
+            MaeveError::Proto(ref err) => err.description(),
+            MaeveError::Write => "Failed write",
+            MaeveError::WriteHistory => "Failed write to .history.txt",
         }
     }
 
     fn cause(&self) -> Option<&error::Error> {
         match *self {
-            MaeveError::Io(ref err) => Some(err),
-            MaeveError::Write(ref err) => Some(err),
-            MaeveError::Load(ref err) => Some(err),
-            MaeveError::Proto => None,
-            MaeveError::Parse => None,
             MaeveError::Exit => None,
+            MaeveError::Io(ref err) => Some(err),
+            MaeveError::Load => None,
+            MaeveError::Parse => None,
+            MaeveError::Proto(ref err) => Some(err),
+            MaeveError::Write => None,
             MaeveError::WriteHistory => None,
         }
     }

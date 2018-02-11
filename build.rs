@@ -8,9 +8,10 @@ use std::process::{Command, Stdio};
 use glob::glob;
 
 fn main() {
-    println!("Hello!");
+    println!("cargo:rerun-if-changed=\"protos/*.proto\"");
+    println!("cargo:rerun-if-changed=\"src/protos/*\"");
 
-    // generate_pbs();
+    generate_pbs();
     generate_protos();
 }
 
@@ -55,6 +56,6 @@ fn generate_pb(path: std::path::PathBuf) {
 }
 
 fn generate_protos() {
-     prost_build::compile_protos(&["./protos/master.proto"],
-        &["./protos"]).unwrap();
+    prost_build::compile_protos(&["./protos/master.proto"], &["./protos"])
+        .unwrap();
 }

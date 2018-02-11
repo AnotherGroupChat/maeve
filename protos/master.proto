@@ -52,8 +52,9 @@ message Game {
   }
   message Action {
     string description = 1; // You swung the hat!
-    string name = 2;        // "swing"
+    string verb = 2;        // "swing"
     LevelId resultant_level = 3;
+    repeated Conditional conditional = 4;
   }
   message NPC {
     string name = 1; // Frank the troll.
@@ -62,8 +63,10 @@ message Game {
 
   message Item {
     string name = 1;             // e.g. Sword, hat etc..
-    string description = 2;      // e.g. Hard, flacid etc..
-    repeated Action actions = 3; // What the Item can do.
+    string id = 2;               // string for lookup 
+    string description = 3;      // e.g. Hard, flacid etc..
+    repeated Action actions = 4; // What the Item can do.
+    string state = 5;      // e.g. Hard, flacid etc..
   }
 
   message Level {
@@ -77,6 +80,7 @@ message Game {
     repeated NPC npcs = 4;   // A troll is in the room.
     repeated Item items = 5; // Items in the room
     repeated Entrance entrance = 6;
+    repeated Action actions = 7;
   }
 
   // State variables.

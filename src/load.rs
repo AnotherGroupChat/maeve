@@ -41,7 +41,7 @@ pub fn save<I: Interfaceable>(
 
     let mut path = src.prompt()?;
     if path == "" {
-        path = String::from(game.save_path);
+        path = String::from(game.save_path.clone());
     }
     game.save_path = path.clone();
 
