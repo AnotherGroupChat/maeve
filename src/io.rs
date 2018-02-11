@@ -3,9 +3,9 @@
 use error::MaeveError;
 use prost::Message;
 use screen::Interfaceable;
+use std::fs::File;
 use std::io::Read;
 use std::io::Write;
-use std::fs::File;
 use std::path::Path;
 
 pub fn extract_protobuf<F, M, I>(
