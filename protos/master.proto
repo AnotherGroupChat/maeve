@@ -6,11 +6,11 @@ package Maeve;
 
 message ScopedState {
   string id = 1;
-  string state = 2;
+  repeated string tags = 2;
 }
 message Global {
   string id = 1;
-  string state = 2;
+  repeated string tags = 2;
 }
 message State {
   oneof state {
@@ -19,7 +19,6 @@ message State {
   }
   string comment = 3;
 }
-
 message Conditional {
   State clause = 1;
   oneof left {
@@ -33,7 +32,6 @@ message Conditional {
     string right_leaf = 7;
   } 
 }
-
 
 // An instance of a game to be loaded.
 message Game {
