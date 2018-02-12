@@ -6,44 +6,20 @@ Maeve is an interpreter for text-based games. The end goal is support for a comm
 
 Go to [the Rust website] and download Rust.
 
-Then once you've downloaded Rust:
-
-```sh
-$ git clone https://github.com/AnotherGroupChat/maeve
-$ cd maeve
-$ cargo install protobuf
+compile with    
+```    
+$ cargo build  
+```    
+   
+Once you've completed the above instructions the game should now be ready to run with: 
+   
+```sh  
+$ cargo run    
 ```
 
-- Ubuntu
-```sh
-$ sudo apt-get install protobuf-compiler
-```
-
-- Arch
-```sh
-$ sudo pacman -S protobuf
-```
-
-- Mac
-```sh
-$ brew install protobuf
-```
-
-then add `protoc-gen-rust` to $PATH (see [rust-protobuf](https://github.com/stepancheg/rust-protobuf) for more details)
-```
-$ PATH="$HOME/.cargo/bin:$PATH"
-```
-
-and then compile with
-```
-$ cargo build
-```
-
-Once you've completed the above instructions the game should now be ready to run with:
-
-```sh
-$ cargo run
-```
+In theory, the rust protobuf compiler should be autodownloaded for you and provisioned.
+The current game relies of Protobuf3; exisiting compilers may not support this.
+For reference, please see the [PROST!](https://github.com/danburkert/prost) page for details.
 
 When starting a new game, you will be asked which file you would like to load, currently the file you should
 choose is:

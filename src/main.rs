@@ -3,7 +3,7 @@
 #[macro_use]
 extern crate clap;
 extern crate maeve;
-extern crate protobuf;
+extern crate prost;
 
 use clap::App;
 use maeve::error::MaeveError;

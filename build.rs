@@ -1,4 +1,5 @@
 extern crate glob;
+extern crate prost_build;
 
 use std::fs::File;
 use std::io::Write;
@@ -7,7 +8,8 @@ use std::process::{Command, Stdio};
 use glob::glob;
 
 fn main() {
-    println!("cargo:rerun-if-changed=\"src/protos/*.proto\"");
+    println!("cargo:rerun-if-changed=\"protos/*.proto\"");
+    println!("cargo:rerun-if-changed=\"src/protos/*\"");
 
     generate_pbs();
     generate_protos();
@@ -37,7 +39,7 @@ fn generate_pb(path: std::path::PathBuf) {
         .read_to_string(&mut contents)
         .expect("Failed to read from file.");
 
-    let mut protos_cmd = Command::new("protoc")
+    let mut protos_cmd = Command::new(prost_build::protoc())
         .arg("--encode=Maeve.Game")
         .arg("protos/master.proto")
         .stdin(Stdio::piped())
@@ -54,20 +56,6 @@ fn generate_pb(path: std::path::PathBuf) {
 }
 
 fn generate_protos() {
-    for entry in glob("./protos/*.proto").expect("Failed to read glob pattern")
-    {
-        match entry {
-            Ok(path) => generate_proto(path),
-            Err(e) => println!("{:?}", e),
-        }
-    }
-}
-
-fn generate_proto(path: std::path::PathBuf) {
-    Command::new("protoc")
-        .arg("--rust_out")
-        .arg("src/protos")
-        .arg(&path)
-        .spawn()
-        .expect("Failed to generate proto");
+    prost_build::compile_protos(&["./protos/master.proto"], &["./protos"])
+        .unwrap();
 }

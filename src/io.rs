@@ -1,47 +1,45 @@
 //! Operations that interact with the file system.
 
 use error::MaeveError;
-use protobuf::CodedOutputStream;
-use protobuf::Message;
-use protobuf::core::MessageStatic;
+use prost::Message;
 use screen::Interfaceable;
 use std::fs::File;
+use std::io::Read;
+use std::io::Write;
 use std::path::Path;
 
-pub fn extract_protobuf<F, M: MessageStatic, I: Interfaceable>(
+pub fn extract_protobuf<F, M, I>(
     src: &mut I,
     path: &str,
     callback: F,
 ) -> Result<M, MaeveError>
 where
     F: Fn(&mut I, M) -> Result<M, MaeveError>,
+    M: Message + Default,
+    I: Interfaceable,
 {
-    return match File::open(&Path::new(path)) {
-        Ok(mut is) => match ::protobuf::parse_from_reader::<M>(&mut is) {
-            Ok(t) => callback(src, t),
-            Err(err) => Err(MaeveError::Proto(err)),
-        },
-        Err(_) => Err(MaeveError::Load),
-    };
+    let mut buf = Vec::new();
+    File::open(&Path::new(path))?.read_to_end(&mut buf)?;
+
+    let message = M::decode(&buf)?;
+    return Ok(callback(src, message)?);
 }
 
-pub fn write_protobuf<M: Message>(
+pub fn write_protobuf<M: Message + Default>(
     path: &str,
-    msg: &M,
+    message: &M,
 ) -> Result<(), MaeveError> {
-    let mut file = File::create(&Path::new(&path))?;
-    let mut cos = CodedOutputStream::new(&mut file);
-    msg.write_to(&mut cos)?;
-    cos.flush()?;
+    let mut buf = Vec::with_capacity(message.encoded_len());
+    message.encode(&mut buf)?;
+    File::create(&Path::new(&path))?.write_all(&buf)?;
     return Ok(());
 }
 
-pub fn prompt_path<F, M: MessageStatic, I: Interfaceable>(
-    src: &mut I,
-    callback: F,
-) -> Result<M, MaeveError>
+pub fn prompt_path<F, M, I>(src: &mut I, callback: F) -> Result<M, MaeveError>
 where
     F: Fn(&mut I, M) -> Result<M, MaeveError>,
+    M: Message + Default,
+    I: Interfaceable,
 {
     src.print("Please provide the name of save file you'd like to load:");
     let choice = src.prompt()?;

@@ -1,7 +1,42 @@
-use protobuf;
+//! Contains errors relevant to the game. Wraps everything for consistency.
+
+use prost::DecodeError;
+use prost::EncodeError;
 use std::error;
 use std::fmt;
 use std::io;
+
+// Submit PR to Prost for Error container similar to this.
+#[derive(Debug)]
+pub enum ProstError {
+    Decode(DecodeError),
+    Encode(EncodeError),
+}
+
+impl fmt::Display for ProstError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            ProstError::Encode(ref err) => write!(f, "Encode Error: {}", err),
+            ProstError::Decode(ref err) => write!(f, "Decode Error: {}", err),
+        }
+    }
+}
+
+impl error::Error for ProstError {
+    fn description(&self) -> &str {
+        match *self {
+            ProstError::Encode(ref err) => err.description(),
+            ProstError::Decode(ref err) => err.description(),
+        }
+    }
+
+    fn cause(&self) -> Option<&error::Error> {
+        match *self {
+            ProstError::Encode(ref err) => Some(err),
+            ProstError::Decode(ref err) => Some(err),
+        }
+    }
+}
 
 #[derive(Debug)]
 pub enum MaeveError {
@@ -9,7 +44,7 @@ pub enum MaeveError {
     Io(io::Error),
     Load,
     Parse,
-    Proto(protobuf::ProtobufError),
+    Proto(ProstError),
     Write,
     WriteHistory,
 }
@@ -20,9 +55,15 @@ impl From<io::Error> for MaeveError {
     }
 }
 
-impl From<protobuf::ProtobufError> for MaeveError {
-    fn from(err: protobuf::ProtobufError) -> MaeveError {
-        MaeveError::Proto(err)
+impl From<DecodeError> for MaeveError {
+    fn from(err: DecodeError) -> MaeveError {
+        MaeveError::Proto(ProstError::Decode(err))
+    }
+}
+
+impl From<EncodeError> for MaeveError {
+    fn from(err: EncodeError) -> MaeveError {
+        MaeveError::Proto(ProstError::Encode(err))
     }
 }
 
