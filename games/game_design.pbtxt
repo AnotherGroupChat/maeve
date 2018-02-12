@@ -15,6 +15,7 @@ stats {
   stat_value : 2
 }
 
+// Scene from origin Zork
 levels {
   actions {
     verb: "LOOK"
@@ -34,12 +35,12 @@ levels {
     id: "WINDOW"
     state: "CLOSED"
     actions {
-      verb: "CLOSE"
+      verb: "OPEN"
       conditional {
         clause {
           scope {
             id: "WINDOW"
-            state: "OPEN"
+            state: "CLOSE"
           }
         }
         left_change {
@@ -52,12 +53,12 @@ levels {
       }
     }
     actions {
-      verb: "OPEN"
+      verb: "CLOSE"
       conditional {
         clause {
           scope {
             id: "WINDOW"
-            state: "CLOSE"
+            state: "OPEN"
           }
         }
         left_change {
