@@ -20,5 +20,18 @@ pub fn evaluate<I: Interfaceable>(
                 parsed => src.print(parsed),
             };
         }
+
+        // Attempt verb search first
+        for fuzzed_verb in fuzz(tokens) {
+
+        }
+
+        // Attempt item search
+        for fuzzed_item in fuzz(tokens) {
+            // Check for associated verbs
+            for fuzzed_verb in fuzz(remainder) {
+                // If match attempt to run
+            }
+        }
     }
 }
