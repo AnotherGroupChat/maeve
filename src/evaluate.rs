@@ -103,7 +103,10 @@ impl Fuzz {
 }
 
 // Would be better with a generator, However generators are currently only
-// experimental in Rust. Currently does a permutation with all possible words. I should mention this is a massive hack. A better implementation of this would be creating something like a Chomsky Hierarchy and intelligently check tokens against the game definition.
+// experimental in Rust. Currently does a permutation with all possible words.
+// I should mention this is a massive hack. A better implementation of this
+// would be creating something like a Chomsky Hierarchy and intelligently check
+// tokens against the game definition.
 impl Iterator for Fuzz {
     type Item = FuzzItem;
     fn next(&mut self) -> Option<Self::Item> {
@@ -198,7 +201,6 @@ fn undefined<I: Interfaceable>(
     act.description = String::from("Yeah.. I didn't get that.");
     return Ok(Some(Action::Act(act)));
 }
-
 
 // FILE(machine.rs)
 fn extract_state<'m, I: Interfaceable>(
