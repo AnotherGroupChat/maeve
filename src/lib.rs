@@ -1,8 +1,13 @@
 //! A library file to bundle all potentially external facing utilities.
 
+#![feature(try_trait)]
+
+#[macro_use]
+extern crate lazy_static;
 extern crate prost;
 #[macro_use]
 extern crate prost_derive;
+extern crate regex;
 
 pub mod error;
 pub mod evaluate;

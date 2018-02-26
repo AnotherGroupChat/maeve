@@ -1,71 +1,82 @@
 name : "Protagonist"
+person {
+   level: "house"
+}
 save_path: "games/session.pb"
-stats {
-  stat_id : 0
-  name : "Human"
-}
-stats {
-  stat_id : 1
-  name : "Health"
-  stat_value : 100
-}
-stats {
-  stat_id : 2
-  name : "Deaths"
-  stat_value : 2
-}
 
 levels {
-  actions {
-    verb: "LOOK"
-    description: "You are behind the white house.  In one corner of the house there is a small window which is "
-    conditional {
-      clause {
-        scope {
-          id: "WINDOW"
-          state: "OPEN"
-        }
-      }
-      left_leaf: "open."
-      right_leaf: "slightly ajar."
-    }
-  }
-  items {
-    id: "WINDOW"
-    state: "CLOSED"
+  key: "house"
+  value {
     actions {
-      verb: "CLOSE"
-      conditional {
-        clause {
-          scope {
+      key: "LOOK"
+      value {
+        description: "You are behind the white house.  In one corner of the house there is a small window which is "
+        conditionals {
+          clause {
+            scope: ITEM
             id: "WINDOW"
-            state: "OPEN"
+            tags: "OPEN"
           }
-        }
-        left_change {
-           scope {
-             id: "WINDOW"
-             state: "OPEN"
-           }
-           comment: "With great effort, you open the window far enough to allow entry."
+          left {
+            leaf: "open."
+          }
+          right { 
+            leaf: "slightly ajar."
+          }
         }
       }
     }
-    actions {
-      verb: "OPEN"
-      conditional {
-        clause {
-          scope {
-            id: "WINDOW"
-            state: "CLOSE"
+    items {
+      key: "WINDOW"
+      value {
+        state {
+          tags: "CLOSE"
+        }
+        actions {
+          key: "OPEN"
+          value {
+            conditionals {
+              clause {
+                scope: ITEM
+                id: "WINDOW"
+                tags: "CLOSE"
+              }
+              left {
+                change {
+                  type: REPLACE 
+                  context {
+                    scope: ITEM
+                    id: "WINDOW"
+                    tags: "OPEN"
+                  }
+                  comment: "With great effort, you open the window far enough to allow entry."
+                }
+              }
+            }
           }
         }
-        left_change {
-           scope {
-             id: "WINDOW"
-             state: "CLOSE"
-           }
-           comment: "The window closes (more easily than it opened)."
+        actions {
+          key: "CLOSE"
+          value {
+            conditionals {
+              clause {
+                scope: ITEM
+                id: "WINDOW"
+                tags: "OPEN"
+              }
+              left {
+                change {
+                  type: REPLACE 
+                  context {
+                    scope: ITEM
+                    id: "WINDOW"
+                    tags: "CLOSE"
+                  }
+                  comment: "The window closes (more easily than it opened)."
+                }
+              }
+            }
+          }
         }
       }
     }

@@ -4,87 +4,88 @@ package Maeve;
 // TODO: break this into seperate proto files. This is just a nice and hacky way
 // define our schema quickly.
 
-message ScopedState {
-  string id = 1;
-  repeated string tags = 2;
-}
-message Global {
-  string id = 1;
-  repeated string tags = 2;
-}
 message State {
-  oneof state {
-    Global global = 1;
-    ScopedState scope = 2; 
-  }
+  repeated string tags = 1;
+  float value = 2;
   string comment = 3;
 }
-message Conditional {
-  State clause = 1;
-  oneof left {
-    Conditional left_branch = 2;
-    State left_change = 3;
-    string left_leaf = 4;
+
+// Open to a better name for this.
+message Context {
+  enum Scope {
+    CHARACTER = 0;
+    LEVEL = 1;
+    ITEM = 2;
+    GLOBAL = 3;
   }
-  oneof right {
-    Conditional right_branch = 5;
-    State right_change = 6;
-    string right_leaf = 7;
+  Scope scope = 1;
+  string id = 2;
+  oneof content {
+    string tags = 3;
+    float value = 4;
   } 
+}
+
+message Change {
+  enum ChangeType {
+    REPLACE = 0;
+    ADD = 1;
+    REMOVE = 2;
+  }
+  ChangeType type = 1;
+  Context context = 2;
+  string comment = 3;
+}
+
+message Branch {
+  oneof branch {
+    Conditional fork = 1;
+    Change change = 2;
+    string leaf = 3;
+  }
+}
+
+message Conditional {
+  Context clause = 1;
+  Branch left = 2;
+  Branch right = 3;
 }
 
 // An instance of a game to be loaded.
 message Game {
-  
-  // Everything that has an object id, should have a state.
-  message ObjectId {
-    int32 value = 1;
-  }
-  message LevelId {
-    int32 value = 1; // 0,1,2,3,4,5
-  }
-  message Stat {
-    int32 stat_id = 1; // 0,1,2,3,4,5
-    string name = 2; // k/d ratio, health, host or human
-    int32 stat_value = 3; // 0-100 or bigger if necessary
-  }
+
   message Action {
     string description = 1; // You swung the hat!
-    string verb = 2;        // "swing"
-    LevelId resultant_level = 3;
-    repeated Conditional conditional = 4;
+    string resultant_level = 2;
+    repeated Conditional conditionals = 3;
   }
-  message NPC {
+
+  message Character {
     string name = 1; // Frank the troll.
-    repeated Stat stats = 2;
+    string level = 2;
+    map<string, State> stats = 3;
+    map<string, Item> inventory= 4; // What you got 
+    map<string, Action> actions = 5;
   }
 
   message Item {
-    string name = 1;             // e.g. Sword, hat etc..
-    string id = 2;               // string for lookup 
-    string description = 3;      // e.g. Hard, flacid etc..
-    repeated Action actions = 4; // What the Item can do.
-    string state = 5;      // e.g. Hard, flacid etc..
+    string description = 1;      // e.g. Hard, flacid etc..
+    map<string, Action> actions = 2; // What the Item can do.
+    State state = 3; // e.g. Hard, flacid etc..
   }
 
   message Level {
-    message Entrance {
-      string description = 1; // To the left there is a ladder.
-      Action action = 2;      // Climbed into the well, flew across the sky.
-    }
     string name = 1; // Sweetwater, Ranch, Control Room, Cold Storage
-    LevelId id = 2;
-    string intro = 3;        // e.g "You entered the room!";
-    repeated NPC npcs = 4;   // A troll is in the room.
-    repeated Item items = 5; // Items in the room
-    repeated Entrance entrance = 6;
-    repeated Action actions = 7;
+    string intro = 2;        // e.g "You entered the room!";
+    State state = 3;
+    map<string, Item> items = 4; // Items in the room
+    map<string, Action> actions = 5;
   }
 
-  // State variables.
+  // State variables. Merge 1 and 2 for potentially multithreaded sessions.
   string name = 1;
-  string save_path = 2;
-  repeated Level levels = 3;   // Game levels.
-  repeated Item inventory = 4; // What you got.
-  repeated Stat stats = 5;
+  Character person = 2;
+  string save_path = 3;
+  map<string, Level> levels = 4;   // Game levels.
+  map<string, State> globals = 5;   // Global variable
 }
