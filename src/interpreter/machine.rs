@@ -1,16 +1,16 @@
 use error::MaeveError;
 use load::save;
+use protos::master::Change;
+use protos::master::Conditional;
+use protos::master::Context;
 use protos::master::Game;
+use protos::master::State;
+use protos::master::branch::Branch;
+use protos::master::context::Content;
+use protos::master::context::Scope;
 use protos::master::game;
 use screen::Interfaceable;
 use std::collections::HashMap;
-use protos::master::Conditional;
-use protos::master::State;
-use protos::master::Change;
-use protos::master::Context;
-use protos::master::context::Scope;
-use protos::master::context::Content;
-use protos::master::branch::Branch;
 use std::rc::Rc;
 
 // Struct to bind. A pretty large but trivial architecture change could be to
@@ -20,10 +20,9 @@ use std::rc::Rc;
 #[derive(Debug)]
 pub struct Machine<'m, I: 'm + Interfaceable> {
     pub src: &'m mut I,
-    pub game: &'m mut Game,
-    pub tokens: &'m Vec<String>,
-    pub level: &'m Rc<game::Level>,
-    pub items: &'m HashMap<String, Rc<game::Item>>,
+    pub game: Rc<&'m mut Game>,
+    pub level: Rc<&'m game::Level>,
+    pub items: HashMap<String, Rc<&'m game::Item>>,
 }
 
 pub enum Action {
@@ -34,6 +33,41 @@ pub enum Action {
 }
 
 impl<'m, I: Interfaceable> Machine<'m, I> {
+
+    pub fn new(
+        src: &'m mut I,
+        game: &'m mut Game,
+    ) -> Self {
+        let mut items: HashMap<String, Rc<&game::Item>> = HashMap::new();
+        let person : Option<Box<&game::Character>> = None;
+        // let game : &'m Rc<&'m mut Game> = &Rc::new(game);
+
+        if let &Some(ref person) = &game.person {
+            let person = Box::new(&person);
+            for (ref name, ref item) in person.inventory.iter() {
+                items.insert(name.to_string(), Rc::new(&item));
+            }
+        }
+
+        // items.extend(person.inventory.clone());
+        if let Some(person) = person {
+            if let &Some(level) = &game.levels.get(&person.level) {
+                // items.extend(level.items.clone());
+                return Machine {
+                    src: src,
+                    game: Rc::new(game),
+                    level: Rc::new(level),
+                    items: items,
+                    // tokens: ,
+                };
+            }
+            panic!(MaeveError::from("Level for character not found..."));
+        }
+        panic!(MaeveError::from(
+            "A Character was not specifying in the game...",
+        ));
+    }
+
     fn extract_state(
         &mut self,
         context: &Context,
@@ -143,14 +177,14 @@ impl<'m, I: Interfaceable> Machine<'m, I> {
     ) -> Result<(), MaeveError> {
         match game_action {
             Action::Act(action) => {
-                let mut description: String = action.description;
-                for conditional in action.conditionals {
+                let mut description: String = action.description.clone();
+                for conditional in action.conditionals.clone() {
                     self.evaluate_conditional(conditional, &mut description)?;
                 }
                 self.src.print(&description);
             },
             Action::Save => {
-                save(self.src, self.game)?
+                save(self.src, &mut self.game)?
             },
             _ => self.src.print("Didn't do anything..."),
         }

@@ -1,14 +1,15 @@
 use error::MaeveError;
 use interpreter::fuzz::Fuzz;
 use interpreter::machine::Action;
-use protos::master::game;
 use interpreter::machine::Machine;
 use screen::Interfaceable;
+use std::rc::Rc;
 
 pub fn builtin<I: Interfaceable>(
-    m: &Machine<I>,
+    _m: &Machine<I>,
+    tokens: &Vec<String>,
 ) -> Result<Option<Action>, MaeveError> {
-    for fuzzed in Fuzz::new(&m.tokens) {
+    for fuzzed in Fuzz::new(tokens) {
         if fuzzed.remainder.len() > 1 {
             return Ok(None);
         }
@@ -23,13 +24,14 @@ pub fn builtin<I: Interfaceable>(
 
 pub fn item<I: Interfaceable>(
     m: &Machine<I>,
+    tokens: &Vec<String>,
 ) -> Result<Option<Action>, MaeveError> {
     // Attempt item search
-    for fuzzed_item in Fuzz::new(&m.tokens) {
+    for fuzzed_item in Fuzz::new(&tokens) {
         if let Some(item) = m.items.get(&fuzzed_item.token) {
             for fuzzed_action in Fuzz::new(&fuzzed_item.remainder) {
                 if let Some(action) = item.actions.get(&fuzzed_action.token) {
-                    return Ok(Some(Action::Act(action)));
+                    return Ok(Some(Action::Act(Rc::new(action.clone()))));
                 }
             }
         }
@@ -39,11 +41,12 @@ pub fn item<I: Interfaceable>(
 
 pub fn level<I: Interfaceable>(
     m: &Machine<I>,
+    tokens: &Vec<String>,
 ) -> Result<Option<Action>, MaeveError> {
     // Attempt item search
-    for fuzzed_item in Fuzz::new(&m.tokens){
+    for fuzzed_item in Fuzz::new(&tokens){
         if let Some(action) = m.level.actions.get(&fuzzed_item.token) {
-            return Ok(Some(Action::Act(action)));
+            return Ok(Some(Action::Act(Rc::new(action.clone()))));
         }
     }
     return Ok(None);
@@ -54,8 +57,9 @@ pub fn level<I: Interfaceable>(
 // well?
 pub fn undefined<I: Interfaceable>(
     _m: &Machine<I>,
+    _tokens: &Vec<String>,
 ) -> Result<Option<Action>, MaeveError> {
     return Ok(Some(Action::Undefined));
 }
 
-pub type Parser<M> = Fn(M) -> Result<Option<Action>, MaeveError>;
+// pub type Parser<M> = Fn(M) -> Result<Option<Action>, MaeveError>;

@@ -1,6 +1,7 @@
 //! A library file to bundle all potentially external facing utilities.
 
 #![feature(try_trait)]
+#![feature(nll)]
 
 #[macro_use]
 extern crate lazy_static;
