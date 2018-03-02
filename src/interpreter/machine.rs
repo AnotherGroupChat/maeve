@@ -11,6 +11,7 @@ use protos::master::Context;
 use protos::master::context::Scope;
 use protos::master::context::Content;
 use protos::master::branch::Branch;
+use std::rc::Rc;
 
 // Struct to bind. A pretty large but trivial architecture change could be to
 // add all functions that consume machine to a machine implimentation. This
@@ -21,12 +22,12 @@ pub struct Machine<'m, I: 'm + Interfaceable> {
     pub src: &'m mut I,
     pub game: &'m mut Game,
     pub tokens: &'m Vec<String>,
-    pub level: &'m game::Level,
-    pub items: &'m HashMap<String, game::Item>,
+    pub level: &'m Rc<game::Level>,
+    pub items: &'m HashMap<String, Rc<game::Item>>,
 }
 
 pub enum Action {
-    Act(game::Action),
+    Act(Rc<game::Action>),
     NoOp,
     Undefined,
     Save,
