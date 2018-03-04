@@ -57,7 +57,7 @@ message Game {
   message Action {
     string description = 1; // You swung the hat!
     string resultant_level = 2;
-    repeated Conditional conditionals = 3;
+    Conditional conditional = 3;
   }
 
   message Character {

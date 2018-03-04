@@ -11,7 +11,7 @@ levels {
       key: "LOOK"
       value {
         description: "You are behind the white house.  In one corner of the house there is a small window which is "
-        conditionals {
+        conditional {
           clause {
             scope: ITEM
             id: "WINDOW"
@@ -35,7 +35,7 @@ levels {
         actions {
           key: "OPEN"
           value {
-            conditionals {
+            conditional {
               clause {
                 scope: ITEM
                 id: "WINDOW"
@@ -58,7 +58,7 @@ levels {
         actions {
           key: "CLOSE"
           value {
-            conditionals {
+            conditional {
               clause {
                 scope: ITEM
                 id: "WINDOW"
