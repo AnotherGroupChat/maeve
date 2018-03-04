@@ -24,7 +24,7 @@ pub fn new<I: Interfaceable>(
     src.print("What is your name?");
 
     let name = src.prompt()?;
-    game.name = name.clone();
+    game.name = name;
     save(src, &mut game)?;
     return Ok(game);
 }
@@ -41,15 +41,15 @@ pub fn save<I: Interfaceable>(
 
     let mut path = src.prompt()?;
     if path == "" {
-        path = String::from(game.save_path.clone());
+        path = String::from(game.save_path.to_string());
     }
-    game.save_path = path.clone();
+    game.save_path = path;
 
-    if !Path::new(&path).exists()
+    if !Path::new(&game.save_path).exists()
         || src.confirm("Do you want to save over this file?")?
     {
         src.print("Saving...");
-        return write_protobuf(&path, game);
+        return write_protobuf(&game.save_path, game);
     }
     src.print("File not saved.");
     return Ok(());

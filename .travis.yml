@@ -2,7 +2,7 @@ sudo: true
 language: rust
 cache: cargo
 rust:
-  - stable
+  - nightly 
 
 addons:
   apt:

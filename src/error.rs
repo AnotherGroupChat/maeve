@@ -5,6 +5,7 @@ use prost::EncodeError;
 use std::error;
 use std::fmt;
 use std::io;
+use std::option::NoneError;
 
 // Submit PR to Prost for Error container similar to this.
 #[derive(Debug)]
@@ -41,12 +42,26 @@ impl error::Error for ProstError {
 #[derive(Debug)]
 pub enum MaeveError {
     Exit,
+    Game(String),
     Io(io::Error),
     Load,
+    No(NoneError),
     Parse,
     Proto(ProstError),
     Write,
     WriteHistory,
+}
+
+impl<'a> From<&'a str> for MaeveError {
+    fn from(err: &'a str) -> MaeveError {
+        MaeveError::Game(String::from(err))
+    }
+}
+
+impl From<NoneError> for MaeveError {
+    fn from(err: NoneError) -> MaeveError {
+        MaeveError::No(err)
+    }
 }
 
 impl From<io::Error> for MaeveError {
@@ -73,8 +88,12 @@ impl fmt::Display for MaeveError {
             MaeveError::Exit => {
                 write!(f, "We look forward to seeing you again!")
             }
+            MaeveError::Game(ref err) => write!(f, "Game Error: {}", err),
             MaeveError::Io(ref err) => write!(f, "IO Error: {}", err),
             MaeveError::Load => write!(f, "Load Error!"),
+            MaeveError::No(ref err) => {
+                write!(f, "Incomplete Game Definition: {:?}", err)
+            }
             MaeveError::Parse => write!(f, "Error parsing input!"),
             MaeveError::Proto(ref err) => write!(f, "Proto Error: {}", err),
             MaeveError::Write => write!(f, "Write Error!"),
@@ -89,8 +108,12 @@ impl error::Error for MaeveError {
     fn description(&self) -> &str {
         match *self {
             MaeveError::Exit => "Exiting",
+            MaeveError::Game(ref err) => err,
             MaeveError::Io(ref err) => err.description(),
             MaeveError::Load => "Error loading file",
+            MaeveError::No(ref _err) => {
+                "Expected an attribute that was not set."
+            }
             MaeveError::Parse => "Bad input",
             MaeveError::Proto(ref err) => err.description(),
             MaeveError::Write => "Failed write",
@@ -101,9 +124,11 @@ impl error::Error for MaeveError {
     fn cause(&self) -> Option<&error::Error> {
         match *self {
             MaeveError::Exit => None,
+            MaeveError::Game(ref _err) => None,
             MaeveError::Io(ref err) => Some(err),
             MaeveError::Load => None,
             MaeveError::Parse => None,
+            MaeveError::No(ref _err) => None,
             MaeveError::Proto(ref err) => Some(err),
             MaeveError::Write => None,
             MaeveError::WriteHistory => None,

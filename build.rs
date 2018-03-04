@@ -19,7 +19,7 @@ fn generate_pbs() {
     for entry in glob("./games/*.pbtxt").expect("Failed to read glob pattern") {
         match entry {
             Ok(path) => generate_pb(path),
-            Err(e) => println!("{:?}", e),
+            Err(e) => println!("Error Generating pbs: {:?}", e),
         }
     }
 }
