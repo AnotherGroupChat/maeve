@@ -3,18 +3,18 @@
 //!     - stdout, stdin
 //!     - readline
 
-#[cfg(feature = "pretty")]
+#[cfg(all(not(feature="stdout"), feature="pretty"))]
 extern crate rustyline;
 
 use error::MaeveError;
-#[cfg(feature = "pretty")]
+#[cfg(all(not(feature="stdout"), feature="pretty"))]
 use self::rustyline::Editor;
-#[cfg(feature = "pretty")]
+#[cfg(all(not(feature="stdout"), feature="pretty"))]
 use std::fs::OpenOptions;
-#[cfg(feature = "pretty")]
+#[cfg(all(not(feature="stdout"), feature="pretty"))]
 use std::path::Path;
 
-#[cfg(not(feature = "pretty"))]
+#[cfg(feature = "stdout")]
 use std;
 
 pub trait Interfaceable {
@@ -38,13 +38,13 @@ pub trait Interfaceable {
     }
 }
 
-#[cfg(feature = "pretty")]
+#[cfg(all(not(feature="stdout"), feature="pretty"))]
 pub struct PrettyPrompt {
     editor: Editor<()>,
     history: bool,
 }
 
-#[cfg(feature = "pretty")]
+#[cfg(all(not(feature="stdout"), feature="pretty"))]
 impl PrettyPrompt {
     fn confirm_history() -> Result<(), MaeveError> {
         match OpenOptions::new()
@@ -58,7 +58,7 @@ impl PrettyPrompt {
     }
 }
 
-#[cfg(feature = "pretty")]
+#[cfg(all(not(feature="stdout"), feature="pretty"))]
 impl Interfaceable for PrettyPrompt {
     fn new() -> PrettyPrompt {
         let mut editor = Editor::<()>::new();
@@ -97,10 +97,10 @@ impl Interfaceable for PrettyPrompt {
     }
 }
 
-#[cfg(not(feature = "pretty"))]
+#[cfg(feature="stdout")]
 pub struct BasicPrompt {}
 
-#[cfg(not(feature = "pretty"))]
+#[cfg(feature="stdout")]
 impl Interfaceable for BasicPrompt {
     fn new() -> BasicPrompt {
         return BasicPrompt {};
@@ -119,8 +119,8 @@ impl Interfaceable for BasicPrompt {
     }
 }
 
-#[cfg(not(feature = "pretty"))]
+#[cfg(feature="stdout")]
 pub type Screen = BasicPrompt;
 
-#[cfg(feature = "pretty")]
+#[cfg(all(not(feature="stdout"), feature="pretty"))]
 pub type Screen = PrettyPrompt;
