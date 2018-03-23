@@ -12,7 +12,7 @@ addons:
 
 install:
   - rustup install nightly
-  - rustup component add --toolchain nightly rustfmt-preview
+  - rustup component add --toolchain nightly
 
 before_script:
   - export PATH=$PATH:~/.cargo/bin
