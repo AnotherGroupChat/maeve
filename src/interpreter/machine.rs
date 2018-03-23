@@ -14,15 +14,16 @@ use screen::Interfaceable;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-// TODO: Remove pub once constructor is implemented. In addition add mut to
-// lookup values so that states can be directly set in change state.
 #[derive(Debug)]
 pub struct Machine<'m, I: 'm + Interfaceable> {
     pub src: &'m mut I,
     pub game: &'m mut Game,
-    pub level: &'m game::Level,
+
+    // Ideal version, these are all references, or pointers and not direct
+    // objects.
+    pub level: game::Level,
     pub items: HashMap<String, game::Item>,
-    pub person: &'m game::Character,
+    pub person: game::Character,
 }
 
 pub enum Action {
@@ -32,16 +33,24 @@ pub enum Action {
     Save,
 }
 
-pub fn extract_information<'g>(
-    game: &'g Game,
-    items: &mut HashMap<String, game::Item>,
-) -> Result<(&'g game::Level, &'g game::Character), MaeveError> {
-    // TODO: Replace with constructor.
-    if let Some(ref person) = game.person {
+pub fn create_machine<'m, I: Interfaceable>(
+    src: &'m mut I,
+    game: &'m mut Game,
+) -> Result<Box<Machine<'m, I>>, MaeveError> {
+    let mut items: HashMap<String, game::Item> = HashMap::new();
+    let game_ref = game.clone();
+    if let Some(ref person) = game_ref.person {
         items.extend(person.inventory.clone());
-        if let Some(level) = game.levels.get(&person.level) {
+        if let Some(level) = game_ref.levels.get(&person.level) {
             items.extend(level.items.clone());
-            return Ok((level, person));
+            let mut machine = Machine {
+                src: src,
+                game: game,
+                level: level.clone(),
+                items: items,
+                person: person.clone(),
+            };
+            return Ok(Box::new(machine));
         }
         return Err(MaeveError::from("Level for character not found..."));
     }
@@ -51,13 +60,6 @@ pub fn extract_information<'g>(
 }
 
 impl<'m, I: Interfaceable> Machine<'m, I> {
-    //TODO: Ideally encorporate extract info into this such that Machine can
-    // be created within the impl and then pass an instance back. On trying to
-    // implement this I ended up in borrowing hell as the lifetimes should
-    // extend the whole object and somehow magically exceed scope. Currently
-    // it's easier just to procss this out of scope. pub fn new(src: &'m
-    // mut I, game: &'m mut Game) -> Self
-
     /* TODO: Create a mutable version of this such that state can be
      * directly set. This would also mean not copying game in extract phase
      * such that the reference can be directly set. */
@@ -77,8 +79,8 @@ impl<'m, I: Interfaceable> Machine<'m, I> {
     fn change_state(&'m mut self, context: &Context) -> Result<(), MaeveError> {
         let mut state = self.extract_state(&context)?.clone();
 
-        // TODO(madisetti): implement this for values.
-        // I'm just feeling pretty lazy at the moment.
+        // TODO(madisetti): Allow for addition, deletion and replacement of
+        // tags. I'm just feeling pretty lazy at the moment.
         // Technically only replace.
         match context.content.as_ref().unwrap() {
             &Content::Tags(ref tags) => {
@@ -89,8 +91,7 @@ impl<'m, I: Interfaceable> Machine<'m, I> {
 
         // TODO: If the reference version of this is created. Use the
         // references to directly set the values on the game object. As per
-        // explained earlier, borrow hell, amkes this difficult to achieve
-        // (maybe once I learn a bit more rust foo.
+        // explained earlier, borrow hell, amkes this difficult to achieve.
         match Scope::from_i32(context.scope)? {
             Scope::Character => {
                 *self.game
@@ -104,7 +105,7 @@ impl<'m, I: Interfaceable> Machine<'m, I> {
                 self.game.levels.get_mut(&self.person.level)?.state =
                     Some(state)
             }
-            // TODO: Only works for character levels for now. Fixxxx.
+            // TODO: Only works for character levels for now. Fix.
             Scope::Item => {
                 self.game
                     .levels

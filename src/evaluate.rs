@@ -2,18 +2,16 @@
 
 use error::MaeveError;
 use interpreter::machine::Machine;
-use interpreter::machine::extract_information;
+use interpreter::machine::create_machine;
 use interpreter::machine;
 use interpreter::parser;
 use interpreter::tokenize::tokenize;
-use protos::master::game;
 use protos::master::Game;
 use screen::Interfaceable;
-use std::collections::HashMap;
 
 pub fn evaluate<I: Interfaceable>(
     src: &mut I,
-    mut game: &mut Game,
+    mut game: Game,
 ) -> Result<(), MaeveError> {
     let parsers: [&Fn(&Machine<I>, &Vec<String>)
         -> Result<Option<machine::Action>, MaeveError>; 4] = [
@@ -34,18 +32,8 @@ pub fn evaluate<I: Interfaceable>(
 
         // TODO(45): Put a mutex on threads and pull the newest game from a
         // channel. For example: mut game = src.sync();
-        let mut items: HashMap<String, game::Item> = HashMap::new();
 
-        // TODO: Replace with constructor.
-        let g = game.clone();
-        let (level, person) = extract_information(&g, &mut items).unwrap();
-        let mut machine = Machine {
-            src: src,
-            game: &mut game,
-            level: level,
-            items: items,
-            person: person,
-        };
+        let mut machine = *create_machine(src, &mut game)?;
 
         for parse in parsers.iter() {
             if let Some(action) = parse(&machine, tokens)? {

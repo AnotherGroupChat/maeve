@@ -15,9 +15,9 @@ install:
 
 before_script:
   - export PATH=$PATH:~/.cargo/bin
-  - cargo install rustfmt || true
+  - cargo install rustfmt --force || true
 
 script:
   - cargo build
-  - cargo fmt -- --write-mode=diff
+  - cargo fmt -- -force --write-mode=diff
   - cargo test

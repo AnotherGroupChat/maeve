@@ -51,7 +51,7 @@ fn main() {
     match result {
         Ok(game) => {
             src.print("And the games begin!");
-            match evaluate(&mut src, &mut game.clone()) {
+            match evaluate(&mut src, game) {
                 Ok(()) | Err(MaeveError::Exit) => src.print("Goodbye!"),
                 Err(err) => src.print(&format!("Runtime error: {}", &err)),
             }
