@@ -20,5 +20,5 @@ before_script:
 
 script:
   - cargo build
-  - cargo +nightly fmt -- --write-mode=diff
+  - cargo fmt -- --write-mode=diff
   - cargo test
