@@ -43,7 +43,7 @@ pub fn level<I: Interfaceable>(
     m: &Machine<I>,
     tokens: &Vec<String>,
 ) -> Result<Option<Action>, MaeveError> {
-    // Attempt item search
+    // Attempt level item search
     for fuzzed_item in Fuzz::new(&tokens) {
         if let Some(action) = m.level.actions.get(&fuzzed_item.token) {
             return Ok(Some(Action::Act(Rc::new(action.clone()))));

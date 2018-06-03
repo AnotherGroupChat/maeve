@@ -5,9 +5,9 @@ package Maeve;
 // define our schema quickly.
 
 message State {
-  repeated string tags = 1;
-  float value = 2;
-  string comment = 3;
+  repeated string tags = 2;
+  float value = 3;
+  string comment = 4;
 }
 
 // Open to a better name for this.

@@ -155,6 +155,30 @@ impl<'m, I: Interfaceable> Machine<'m, I> {
         return Ok(());
     }
 
+    fn evaluate(
+        &'m mut self,
+        maybe_conditional: &Option<&Conditional>,
+        description: &mut String,
+        resultant_level: &String,
+    ) -> Result<(), MaeveError> {
+
+        if ! resultant_level.is_empty() {
+            self.game
+                .person
+                .as_mut()
+                .unwrap()
+                .level = resultant_level.clone();
+            description.push_str(resultant_level);
+            description.push_str("\n---\n");
+        }
+
+        if let &Some(conditional) = maybe_conditional {
+            return self.evaluate_conditional(conditional, description)
+        }
+
+        return Ok(());
+    }
+
     pub fn process_action(
         &'m mut self,
         game_action: Action,
@@ -163,9 +187,10 @@ impl<'m, I: Interfaceable> Machine<'m, I> {
         match game_action {
             Action::Act(action) => {
                 description.push_str(action.description.as_ref());
-                self.evaluate_conditional(
-                    &action.conditional.as_ref().unwrap(),
+                self.evaluate(
+                    &action.conditional.as_ref(),
                     &mut description,
+                    &action.resultant_level,
                 )?;
             }
             Action::Save => save(self.src, &mut self.game)?,

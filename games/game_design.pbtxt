@@ -1,12 +1,18 @@
 name : "Protagonist"
 person {
-   level: "house"
+ level: "Behind House"
 }
 save_path: "games/session.pb"
 
 levels {
-  key: "house"
+  key: "Behind House"
   value {
+    actions {
+      key: "NORTH"
+      value {
+        resultant_level: "North of House"
+      }
+    }
     actions {
       key: "LOOK"
       value {
@@ -78,6 +84,23 @@ levels {
             }
           }
         }
+      }
+    }
+  }
+}
+levels {
+  key: "North of House"
+  value {
+    actions {
+      key: "LOOK"
+      value {
+        description: "You are facing the north side of a white house.  There is no door here, and all the windows are barred."
+      }
+    }
+    actions {
+      key: "SOUTH"
+      value {
+        resultant_level: "Behind House"
       }
     }
   }

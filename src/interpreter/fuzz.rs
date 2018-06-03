@@ -31,7 +31,10 @@ pub struct FuzzItem {
 // is still experimental in Rust. Looks like it might be rolled out at some
 // point in the future, so keep posted.
 lazy_static! {
-    static ref REGEXES: [Replacement; 1] = [Replacement::new("ei", "ie")];
+    static ref REGEXES: [Replacement; 3] = [
+        Replacement::new("^n$", "north"),
+        Replacement::new("^s$", "south"),
+        Replacement::new("ei", "ie")];
 }
 
 impl Fuzz {
@@ -71,20 +74,19 @@ impl Iterator for Fuzz {
             self.index += 1;
         }
 
-        while self.permutes < REGEXES.len()
-            && !REGEXES[self.permutes].re.is_match(&self.token)
-        {
+        let mut token = self.token.clone();
+        while self.permutes < REGEXES.len() {
             self.permutes += 1;
+            if REGEXES[self.permutes - 1].re.is_match(&self.token) {
+                token = String::from(
+                    REGEXES[self.permutes - 1]
+                        .re
+                        .replace(&token, REGEXES[self.permutes - 1].rep),
+                );
+                break;
+            }
         }
 
-        let mut token = self.token.clone();
-        if self.permutes < REGEXES.len() {
-            token = String::from(
-                REGEXES[self.permutes]
-                    .re
-                    .replace(&token, REGEXES[self.permutes].rep),
-            );
-        }
         return Some(FuzzItem {
             token: token.to_uppercase(),
             remainder: self.remainder.clone(),
