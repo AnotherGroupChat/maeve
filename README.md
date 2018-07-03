@@ -6,6 +6,12 @@ Maeve is an interpreter for text-based games. The end goal is support for a comm
 
 Go to [the Rust website] and download Rust.
 
+This project is being developed with nightly rust so you'll need to set it up:
+```
+$ rustup install nightly
+$ rustup default nightly
+```
+
 compile with    
 ```    
 $ cargo build  
@@ -15,6 +21,16 @@ Once you've completed the above instructions the game should now be ready to run
    
 ```sh  
 $ cargo run    
+```
+### Building with Docker:
+
+Run:
+```bash
+$ docker build . -t DOCKER_USER_NAME/maeve:latest
+```
+Access access the container with:
+```bash
+$ docker run -it DOCKER_USER_NAME/maeve:latest sh
 ```
 
 In theory, the rust protobuf compiler should be autodownloaded for you and provisioned.
