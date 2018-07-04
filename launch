@@ -1,14 +1,23 @@
 #!/bin/bash
-if [ -z "$DOCKER_USER_NAME" ]
-then
-    echo "If you have a docker username please enter it, other type 'quit' and then setup docker"
-    read response
-    if [ "$response" = "quit" ]
+function set_docker_uname () {
+    if [ -z "$DOCKER_USER_NAME" ]
     then
-        exit 0
-    else
-        export DOCKER_USER_NAME="$response"
+        echo "If you have a docker username please enter it, other type 'quit' and then setup docker"
+        local response
+        read response
+        if [ "$response" = "quit" ]
+        then
+            exit 0
+        else
+            export DOCKER_USER_NAME="$response"
+        fi
     fi
-fi
-docker build . -t $DOCKER_USER_NAME/maeve:latest
-docker run -it -v "$(pwd)"/games:/usr/src/maeve/games $DOCKER_USER_NAME/maeve:latest maeve
+}
+
+function docker_init () {
+    docker build . -t $DOCKER_USER_NAME/maeve:latest
+    docker run -it -v "$(pwd)"/games:/usr/src/maeve/games $DOCKER_USER_NAME/maeve:latest maeve
+}
+
+set_docker_uname
+docker_init
