@@ -1,0 +1,14 @@
+#!/bin/bash
+if [ -z "$DOCKER_USER_NAME" ]
+then
+    echo "If you have a docker username please enter it, other type 'quit' and then setup docker"
+    read response
+    if [ "$response" = "quit" ]
+    then
+        exit 0
+    else
+        export DOCKER_USER_NAME="$response"
+    fi
+fi
+docker build . -t $DOCKER_USER_NAME/maeve:latest
+docker run -it $DOCKER_USER_NAME/maeve:latest maeve
