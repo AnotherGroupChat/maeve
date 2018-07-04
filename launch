@@ -11,4 +11,4 @@ then
     fi
 fi
 docker build . -t $DOCKER_USER_NAME/maeve:latest
-docker run -it $DOCKER_USER_NAME/maeve:latest maeve
+docker run -it -v "$(pwd)"/games:/usr/src/maeve/games $DOCKER_USER_NAME/maeve:latest maeve
