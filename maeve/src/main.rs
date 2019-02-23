@@ -56,6 +56,7 @@ fn main() {
         Ok(game) => {
             src.print("And the games begin!");
             let mut threads = vec![];
+            // Make this backwards compat
             loop {
                 match src.get_endpoint() {
                     Ok(mut endpoint) => {
@@ -76,7 +77,7 @@ fn main() {
                         }))
                     }
                     Err(err) => match err {
-                        MaeveError::Notify(err) => {
+                        MaeveError::Exit => {
                             src.print(&format!("Exit: {}", &err));
                             break;
                         }

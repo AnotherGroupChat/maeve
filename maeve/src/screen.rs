@@ -7,9 +7,6 @@
 extern crate rustyline;
 
 #[cfg(feature = "threaded")]
-extern crate notify;
-
-#[cfg(feature = "threaded")]
 extern crate ctrlc;
 
 #[cfg(all(not(feature = "stdout"), feature = "pretty"))]
@@ -21,19 +18,18 @@ use std::fs::OpenOptions;
 use std::path::Path;
 
 #[cfg(feature = "threaded")]
-use self::notify::{
-    DebouncedEvent, RecommendedWatcher, RecursiveMode, Watcher,
-};
-#[cfg(feature = "threaded")]
 use std::sync::mpsc::{channel, Receiver};
 #[cfg(feature = "threaded")]
 use std::time::Duration;
 
+use std::fs;
 use std::io::Read;
 use std::io::Write;
+use std::os::unix::net::UnixListener;
 use std::os::unix::net::UnixStream;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::thread;
 
 #[cfg(feature = "stdout")]
 use std;
@@ -162,13 +158,17 @@ pub struct ClientPrompt {
 #[cfg(feature = "threaded")]
 impl Interfaceable for ClientPrompt {
     fn print(&mut self, string: &str) {
-        self.socket.write_all(string.as_bytes());
+        self.socket
+            .write_all(string.as_bytes())
+            .expect("Could not read from socket.");
     }
 
     fn prompt(&mut self) -> Result<String, MaeveError> {
         while !self.switch.load(Ordering::SeqCst) {
             let mut buf = String::new();
-            self.socket.read_to_string(&mut buf);
+            self.socket
+                .read_to_string(&mut buf)
+                .expect("Could not write to socket.");
             if !buf.is_empty() {
                 return Ok(buf);
             }
@@ -187,8 +187,7 @@ pub trait Spawnable {
 #[cfg(feature = "threaded")]
 pub struct ServerPrompt {
     output: Output,
-    rx: Receiver<DebouncedEvent>,
-    watcher: RecommendedWatcher,
+    rx: Receiver<Result<UnixStream, MaeveError>>,
     warned: bool,
     master_switch: Arc<AtomicBool>,
 }
@@ -197,37 +196,43 @@ pub struct ServerPrompt {
 impl Constructable for ServerPrompt {
     fn new() -> ServerPrompt {
         let output = Output::new();
-        // Create a channel to receive the events.
+        let listener = Path::new("sockets/socket.maeve");
+        if listener.exists() {
+            fs::remove_file(&listener).unwrap();
+        }
+        let listener =
+            UnixListener::bind(listener).expect("Error binding sockets.");
         let (tx, rx) = channel();
-        let ctrl_tx = tx.clone();
 
-        let mut watcher: RecommendedWatcher =
-            Watcher::new(tx, Duration::from_secs(2))
-                .expect("Failed to establish watcher.");
-
-        // Add a path to be watched. All files and directories at that
-        // path and below will be monitored for changes.
-        watcher
-            .watch("sockets/", RecursiveMode::NonRecursive)
-            .expect("Failed to watch sockets.");
+        let _ = thread::spawn(move || {
+            for stream in listener.incoming() {
+                match stream {
+                    Ok(stream) => {
+                        /* connection succeeded */
+                        tx.send(Ok(stream)).expect("Channel error.");
+                    }
+                    Err(err) => {
+                        /* connection failed */
+                        tx.send(Err(MaeveError::Io(err)))
+                            .expect("Channel error.");
+                    }
+                }
+            }
+        });
 
         // Also listen for Ctrl-C being pressed to end the server.
+        let master_switch = Arc::new(AtomicBool::new(false));
+        let switch = master_switch.clone();
         ctrlc::set_handler(move || {
-            ctrl_tx
-                .send(DebouncedEvent::Error(
-                    self::notify::Error::Generic(String::from("Stopped.")),
-                    None,
-                ))
-                .expect("Could not send Ctrl-C.");
+            switch.store(true, Ordering::SeqCst);
         })
         .expect("Error setting Ctrl-C handler");
 
         return ServerPrompt {
             output,
             rx: rx,
-            watcher,
             warned: false,
-            master_switch: Arc::new(AtomicBool::new(false)),
+            master_switch,
         };
     }
 }
@@ -252,35 +257,32 @@ impl Spawnable for ServerPrompt {
         }
         // This is a simple loop, but you may want to use more complex
         // logic here, for example to handle I/O.
-        loop {
-            match self.rx.recv().unwrap() {
-                DebouncedEvent::Create(path) => {
-                    // We don't know how to handle directories, only socket
-                    // files.
-                    if path.is_file() {
-                        continue;
-                    }
-                    let mut socket = UnixStream::connect(path)?;
-                    socket
-                        .set_read_timeout(Some(Duration::new(0, 250000)))
-                        .expect("Couldn't set read timeout");
+        while !self.master_switch.load(Ordering::SeqCst) {
+            if let Ok(result) = self.rx.recv_timeout(Duration::from_millis(100))
+            {
+                match result {
+                    Ok(stream) => {
+                        // connection succeeded
+                        stream
+                            .set_read_timeout(Some(Duration::new(0, 250000)))
+                            .expect("Couldn't set read timeout");
 
-                    let client = ClientPrompt {
-                        socket: socket,
-                        switch: self.master_switch.clone(),
-                    };
-                    // Do logging somehow
-                    // self.output.print("New File");
-                    return Ok(Box::new(client));
+                        let client = ClientPrompt {
+                            socket: stream,
+                            switch: self.master_switch.clone(),
+                        };
+                        // Do logging somehow
+                        // self.output.print("New File");
+                        return Ok(Box::new(client));
+                    }
+                    Err(err) => {
+                        /* connection failed */
+                        return Err(err);
+                    }
                 }
-                // Break on errors.
-                DebouncedEvent::Error(e, None) => {
-                    self.master_switch.store(true, Ordering::SeqCst);
-                    return Err(MaeveError::Notify(e));
-                }
-                _ => continue,
-            };
+            }
         }
+        return Err(MaeveError::Exit);
     }
 }
 
