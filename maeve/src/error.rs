@@ -1,5 +1,7 @@
 //! Contains errors relevant to the game. Wraps everything for consistency.
 
+extern crate notify;
+
 use prost::DecodeError;
 use prost::EncodeError;
 use std::error;
@@ -46,6 +48,7 @@ pub enum MaeveError {
     Io(io::Error),
     Load,
     No(NoneError),
+    Notify(self::notify::Error),
     Parse,
     Proto(ProstError),
     Write,
@@ -61,6 +64,12 @@ impl<'a> From<&'a str> for MaeveError {
 impl From<NoneError> for MaeveError {
     fn from(err: NoneError) -> MaeveError {
         MaeveError::No(err)
+    }
+}
+
+impl From<self::notify::Error> for MaeveError {
+    fn from(err: self::notify::Error) -> MaeveError {
+        MaeveError::Notify(err)
     }
 }
 
@@ -94,6 +103,7 @@ impl fmt::Display for MaeveError {
             MaeveError::No(ref err) => {
                 write!(f, "Incomplete Game Definition: {:?}", err)
             }
+            MaeveError::Notify(ref err) => write!(f, "Notify Error: {}", err),
             MaeveError::Parse => write!(f, "Error parsing input!"),
             MaeveError::Proto(ref err) => write!(f, "Proto Error: {}", err),
             MaeveError::Write => write!(f, "Write Error!"),
@@ -114,6 +124,7 @@ impl error::Error for MaeveError {
             MaeveError::No(ref _err) => {
                 "Expected an attribute that was not set."
             }
+            MaeveError::Notify(ref err) => err.description(),
             MaeveError::Parse => "Bad input",
             MaeveError::Proto(ref err) => err.description(),
             MaeveError::Write => "Failed write",
@@ -129,6 +140,7 @@ impl error::Error for MaeveError {
             MaeveError::Load => None,
             MaeveError::Parse => None,
             MaeveError::No(ref _err) => None,
+            MaeveError::Notify(ref err) => Some(err),
             MaeveError::Proto(ref err) => Some(err),
             MaeveError::Write => None,
             MaeveError::WriteHistory => None,

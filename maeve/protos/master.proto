@@ -23,7 +23,7 @@ message Context {
   oneof content {
     string tags = 3;
     float value = 4;
-  } 
+  }
 }
 
 message Change {
@@ -64,19 +64,19 @@ message Game {
     string name = 1; // Frank the troll.
     string level = 2;
     map<string, State> stats = 3;
-    map<string, Item> inventory= 4; // What you got 
+    map<string, Item> inventory= 4; // What you got
     map<string, Action> actions = 5;
   }
 
   message Item {
-    string description = 1;      // e.g. Hard, flacid etc..
+    string description = 1; // e.g. Hard, flacid etc..
     map<string, Action> actions = 2; // What the Item can do.
     State state = 3; // e.g. Hard, flacid etc..
   }
 
   message Level {
     string name = 1; // Sweetwater, Ranch, Control Room, Cold Storage
-    string intro = 2;        // e.g "You entered the room!";
+    string intro = 2; // e.g "You entered the room!";
     State state = 3;
     map<string, Item> items = 4; // Items in the room
     map<string, Action> actions = 5;

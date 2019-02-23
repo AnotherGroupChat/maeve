@@ -1,15 +1,16 @@
 extern crate glob;
 extern crate prost_build;
 
-use std::fs::File;
-use std::io::Write;
-use std::io::prelude::*;
-use std::process::{Command, Stdio};
 use glob::glob;
+use std::fs::File;
+use std::io::prelude::*;
+use std::io::Write;
+use std::process::{Command, Stdio};
 
 fn main() {
     println!("cargo:rerun-if-changed=\"protos/*.proto\"");
     println!("cargo:rerun-if-changed=\"src/protos/*\"");
+    println!("cargo:rerun-if-changed=\"games/*.pbtxt\"");
 
     generate_pbs();
     generate_protos();
@@ -25,7 +26,8 @@ fn generate_pbs() {
 }
 
 fn generate_pb(path: std::path::PathBuf) {
-    let file_name = &path.file_stem()
+    let file_name = &path
+        .file_stem()
         .expect("Error parsing file stem in build.rs")
         .to_str()
         .expect("Error converting path name to string in build.rs");
@@ -53,6 +55,8 @@ fn generate_pb(path: std::path::PathBuf) {
         .expect("Error borrowing mutably in build.rs")
         .write_all(contents.as_bytes())
         .expect("Couldn't write to pb file.");
+
+    println!("Dude...");
 }
 
 fn generate_protos() {

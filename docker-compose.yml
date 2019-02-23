@@ -1,0 +1,30 @@
+version: '3.7'
+
+x-services:
+  &base
+  # user: games
+  build:
+    context: .
+    dockerfile: Dockerfile
+  volumes:
+    - ./maeve:/var/games/maeve
+    - ./games:/var/games/games
+  environment:
+    - DOCKER_USER_NAME="${DOCKER_USER_NAME:-$USER}"
+    - UID="${UID:-1000}"
+    - RUSTC_WRAPPER=sccache
+
+services:
+  run:
+    << : *base
+    command: ["cargo", "run"]
+  release:
+    << : *base
+    command: ["cargo", "install"]
+  lint:
+    << : *base
+    user: root
+    command: "cargo fmt --all"
+  shell:
+    << : *base
+    user: root

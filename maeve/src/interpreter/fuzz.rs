@@ -34,7 +34,8 @@ lazy_static! {
     static ref REGEXES: [Replacement; 3] = [
         Replacement::new("^n$", "north"),
         Replacement::new("^s$", "south"),
-        Replacement::new("ei", "ie")];
+        Replacement::new("ei", "ie")
+    ];
 }
 
 impl Fuzz {

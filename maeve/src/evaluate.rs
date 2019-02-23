@@ -1,9 +1,9 @@
 //! A file that holds logical operations in order to run the game.
 
 use error::MaeveError;
-use interpreter::machine::Machine;
-use interpreter::machine::create_machine;
 use interpreter::machine;
+use interpreter::machine::create_machine;
+use interpreter::machine::Machine;
 use interpreter::parser;
 use interpreter::tokenize::tokenize;
 use protos::master::Game;
@@ -13,8 +13,10 @@ pub fn evaluate<I: Interfaceable>(
     src: &mut I,
     mut game: Game,
 ) -> Result<(), MaeveError> {
-    let parsers: [&Fn(&Machine<I>, &Vec<String>)
-        -> Result<Option<machine::Action>, MaeveError>; 4] = [
+    let parsers: [&Fn(
+        &Machine<I>,
+        &Vec<String>,
+    ) -> Result<Option<machine::Action>, MaeveError>; 4] = [
         &parser::builtin,
         &parser::item,
         &parser::level,

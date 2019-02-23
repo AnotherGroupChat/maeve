@@ -12,25 +12,22 @@ $ rustup install nightly
 $ rustup default nightly
 ```
 
-compile with    
-```    
-$ cargo build  
-```    
-   
-Once you've completed the above instructions the game should now be ready to run with: 
-   
-```sh  
-$ cargo run    
+in the `maeve` directory compile with
 ```
-### Building with Docker:
+$ cargo build
+```
 
+Once you've completed the above instructions the game should now be ready to run with:
+
+```sh
+$ cargo run
+```
+### Running with Docker:
+
+Running with docker is the easiest and recommend option.
 Run:
 ```bash
-$ docker build . -t DOCKER_USER_NAME/maeve:latest
-```
-Access access the container with:
-```bash
-$ docker run -it DOCKER_USER_NAME/maeve:latest sh
+$ docker-compose run run
 ```
 
 In theory, the rust protobuf compiler should be autodownloaded for you and provisioned.
@@ -40,7 +37,7 @@ For reference, please see the [PROST!](https://github.com/danburkert/prost) page
 When starting a new game, you will be asked which file you would like to load, currently the file you should
 choose is:
 ```sh
-games/game_design.pb
+games/game.pb
 ```
 After you have selected your file, the game will ask you where you would like to create a new save file; you
 can save it wherever you like.

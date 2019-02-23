@@ -2,14 +2,14 @@
 
 use error::MaeveError;
 use load::save;
-use protos::master::Conditional;
-use protos::master::Context;
-use protos::master::Game;
-use protos::master::State;
 use protos::master::branch::Branch;
 use protos::master::context::Content;
 use protos::master::context::Scope;
 use protos::master::game;
+use protos::master::Conditional;
+use protos::master::Context;
+use protos::master::Game;
+use protos::master::State;
 use screen::Interfaceable;
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -94,7 +94,8 @@ impl<'m, I: Interfaceable> Machine<'m, I> {
         // explained earlier, borrow hell, amkes this difficult to achieve.
         match Scope::from_i32(context.scope)? {
             Scope::Character => {
-                *self.game
+                *self
+                    .game
                     .person
                     .as_mut()
                     .unwrap()
@@ -161,19 +162,14 @@ impl<'m, I: Interfaceable> Machine<'m, I> {
         description: &mut String,
         resultant_level: &String,
     ) -> Result<(), MaeveError> {
-
-        if ! resultant_level.is_empty() {
-            self.game
-                .person
-                .as_mut()
-                .unwrap()
-                .level = resultant_level.clone();
+        if !resultant_level.is_empty() {
+            self.game.person.as_mut().unwrap().level = resultant_level.clone();
             description.push_str(resultant_level);
             description.push_str("\n---\n");
         }
 
         if let &Some(conditional) = maybe_conditional {
-            return self.evaluate_conditional(conditional, description)
+            return self.evaluate_conditional(conditional, description);
         }
 
         return Ok(());
