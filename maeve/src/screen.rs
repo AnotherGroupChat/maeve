@@ -160,15 +160,14 @@ impl Interfaceable for ClientPrompt {
     fn print(&mut self, string: &str) {
         self.socket
             .write_all(string.as_bytes())
-            .expect("Could not read from socket.");
+            .expect("Could not write to socket.");
     }
 
     fn prompt(&mut self) -> Result<String, MaeveError> {
         while !self.switch.load(Ordering::SeqCst) {
             let mut buf = String::new();
             self.socket
-                .read_to_string(&mut buf)
-                .expect("Could not write to socket.");
+                .read_to_string(&mut buf);
             if !buf.is_empty() {
                 return Ok(buf);
             }
